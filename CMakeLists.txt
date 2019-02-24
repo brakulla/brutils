@@ -16,9 +16,13 @@ add_library(brutils STATIC
 set_target_properties(brutils PROPERTIES
         LINKER_LANGUAGE CXX
         VERSION ${PROJECT_VERSION}
-        SOVERSION 1
         )
 install(TARGETS brutils
         LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib
         ARCHIVE DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib
         )
+
+if (CMAKE_BUILD_TYPE MATCHES Test)
+    add_executable(brutilsTest src/main.cpp)
+    target_link_libraries(brutilsTest brutils)
+endif()
