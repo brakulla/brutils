@@ -27,55 +27,47 @@
 #include <map>
 #include <functional>
 
-namespace brutils
-{
-    template<typename... Args>
-    class signal
-    {
-    public:
-        signal() : _lastId(0) {};
-        signal(const signal &) = delete;
-        signal &operator=(const signal &) = delete;
+namespace brutils {
+template<typename... Args>
+class signal {
+ public:
+  signal() : _lastId(0) {};
+  signal(const signal &) = delete;
+  signal &operator=(const signal &) = delete;
 
-        ~signal() = default;
+  ~signal() = default;
 
-    public:
-        int connect(std::function<void(Args...)> const &slot) const
-        {
-            _slots.insert(std::make_pair(++_lastId, slot));
-            return _lastId;
-        }
+ public:
+  int connect(std::function<void(Args...)> const &slot) const {
+    _slots.insert(std::make_pair(++_lastId, slot));
+    return _lastId;
+  }
 
-        template<typename T>
-        int connect(T *inst, void (T::*func)(Args...) const)
-        {
-            return connect([=](Args... args) {
-                (inst->*func)(args...);
-            });
-        }
+  template<typename T>
+  int connect(T *inst, void (T::*func)(Args...) const) {
+    return connect([=](Args... args) {
+      (inst->*func)(args...);
+    });
+  }
 
-        void disconnect(int id)
-        {
-            _slots.erase(id);
-        }
+  void disconnect(int id) {
+    _slots.erase(id);
+  }
 
-        void disconnectAll()
-        {
-            _slots.clear();
-        }
+  void disconnectAll() {
+    _slots.clear();
+  }
 
-        void emit(Args... p)
-        {
-            for (auto &slot: _slots)
-            {
-                slot.second(p...);
-            }
-        }
+  void emit(Args... p) {
+    for (auto &slot: _slots) {
+      slot.second(p...);
+    }
+  }
 
-    private:
-        mutable std::map<int, std::function<void(Args...)>> _slots;
-        mutable int _lastId;
-    };
+ private:
+  mutable std::map<int, std::function<void(Args...)>> _slots;
+  mutable int _lastId;
+};
 }
 
 #endif //UTILS_SIGSLOT_H
