@@ -12,7 +12,7 @@ include_directories(include)
 include(GNUInstallDirs)
 add_library(brutils STATIC
         src/main.cpp
-        include/brutils/Signal.hpp)
+        include/brutils/signal.hpp)
 set_target_properties(brutils PROPERTIES
         LINKER_LANGUAGE CXX
         VERSION ${PROJECT_VERSION}

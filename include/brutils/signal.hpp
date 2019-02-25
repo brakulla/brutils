@@ -30,14 +30,14 @@
 namespace brutils
 {
     template<typename... Args>
-    class Signal
+    class signal
     {
     public:
-        Signal() : _lastId(0) {};
-        Signal(const Signal &) = delete;
-        Signal &operator=(const Signal &) = delete;
+        signal() : _lastId(0) {};
+        signal(const signal &) = delete;
+        signal &operator=(const signal &) = delete;
 
-        ~Signal() = default;
+        ~signal() = default;
 
     public:
         int connect(std::function<void(Args...)> const &slot) const

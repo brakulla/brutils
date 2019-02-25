@@ -2,7 +2,7 @@
 // Created by brakulla on 24.02.2019.
 //
 #include <iostream>
-#include <brutils/Signal.hpp>
+#include <brutils/signal.hpp>
 #include <thread>
 
 void testSlot(std::string const input)
@@ -13,7 +13,7 @@ int main()
 {
     std::cout << "Hello, World!" << std::endl;
 
-    brutils::Signal<std::string> signal;
+    brutils::signal<std::string> signal;
     int firstConnection = signal.connect(testSlot);
     std::cout << "Connected" << std::endl;
 
