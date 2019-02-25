@@ -22,7 +22,7 @@ class queue_pc {
 
   T pop() {
     std::unique_lock lock(_mutexQ);
-    _cond.wait(_mutexQ, [&] {
+    _cond.wait(lock, [&] {
       return !_queue.empty();
     });
     T item = _queue.front();

@@ -14,11 +14,11 @@ namespace brutils {
 class string_utils {
  public:
   template<class Container>
-  static void split_string(const std::string &str, Container &cont, char delim = '') {
+  static void split_string(const std::string &str, Container &cont, char delim = ' ') {
     std::stringstream ss(str);
     std::string token;
     while (std::getline(ss, token, delim))
-      cont.push_back();
+      cont.push_back(token);
   }
 };
 }
