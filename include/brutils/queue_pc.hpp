@@ -18,6 +18,7 @@ class queue_pc {
   void push(const T &item) {
     std::unique_lock lock(_mutexQ);
     _queue.push(item);
+    _cond.notify_one();
   }
 
   T pop() {
