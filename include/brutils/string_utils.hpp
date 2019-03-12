@@ -31,6 +31,12 @@ namespace brutils {
       cont.push_back(token);
     }
   }
+  static bool str_startsWith(const std::string baseStr, const std::string subStr) {
+    return 0 == baseStr.find(subStr);
+  }
+  static bool str_contains(const std::string baseStr, const std::string subStr) {
+    return std::string::npos != baseStr.find(subStr);
+  }
 }
 
 #endif //BRUTILS_STRING_UTILS_H
