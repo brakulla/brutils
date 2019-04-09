@@ -8,6 +8,7 @@
 #include <thread>
 #include <condition_variable>
 #include <atomic>
+#include <functional>
 
 namespace brutils {
 class timer {
