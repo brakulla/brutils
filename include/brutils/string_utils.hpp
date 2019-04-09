@@ -34,6 +34,11 @@ namespace brutils {
   static bool str_startsWith(const std::string baseStr, const std::string subStr) {
     return 0 == baseStr.find(subStr);
   }
+  static int str_startsWithMatch(const std::string baseStr, const std::string subStr) {
+    if (0 == baseStr.find(subStr))
+      return (int)baseStr.size();
+    else return 0;
+  }
   static bool str_contains(const std::string baseStr, const std::string subStr) {
     return std::string::npos != baseStr.find(subStr);
   }
