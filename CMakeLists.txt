@@ -26,6 +26,10 @@ install(TARGETS brutils
         )
 
 if (CMAKE_BUILD_TYPE MATCHES Test)
+    include_directories(src)
     add_executable(brutilsTest src/main.cpp)
-    target_link_libraries(brutilsTest brutils)
+    target_link_libraries(brutilsTest
+            brutils
+            pthread
+            )
 endif()
