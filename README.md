@@ -3,6 +3,21 @@ Burak Ongay (brakulla) utility library
 
 This a utility library consisting solutions that I came up for different projects, that I think can be reused in other projects.
 
+`brutils` is a header only library. You can copy-paste the headers only, or use `cmake` to embed it in your project.
+
+`src` folder includes only dummy test project. Do not use them, they are rapidly written just to prove the headers are working.
+
+If you want to report an issue, do so by opening an issue through GitHub.
+
+### string_utils
+Static functions to ease string manipulations. Just a few of them. To be increased as long as I continue development in C++.
+
+### timer
+Very simple timer. Runs on its own thread and calls slot function given with `notify(std::function)` function on timeout. To be developed further as any development need occurs.
+
+### queue_pc
+Producer consumer queue. Only aim is to provide safe way to pass data between threads.
+
 ### br_threaded_object
 `br_threaded_object` is a fully implemented class, meant to be inherited by other classes. It creates a new thread on creation, and runs itself on newly created thread with event loop. It also provides signal-slot mechanism.
 
