@@ -29,12 +29,6 @@ template<typename ...Args>
 class slot;
 
 class br_threaded_object {
-  template<typename ...S>
-  friend
-  class slot;
-  template<typename ...S>
-  friend
-  class signal;
  public:
   br_threaded_object() : _running(true) {
     _thread = std::thread(&br_threaded_object::run, this);
@@ -52,6 +46,9 @@ class br_threaded_object {
   };
 
  public:
+  std::thread::id getThreadId() const {
+    return _thread.get_id();
+  }
   template<typename ...Args>
   static void connect(signal<Args...> &sig, slot<Args...> &slot, ConnectionType type = ConnectionType::Auto) {
     sig.connect(slot, type);
@@ -69,13 +66,9 @@ class br_threaded_object {
   std::queue<std::function<void()>> _eventList;
 
  private:
-  void addEventToSlot(const std::function<void()> &event) {
+  void addEvent(const std::function<void()> &event) {
     _eventList.push(event);
     _cond.notify_one();
-  }
-
-  std::thread::id getThreadId() const {
-    return _thread.get_id();
   }
 
  private:
@@ -90,6 +83,13 @@ class br_threaded_object {
       }
     }
   }
+
+  template<typename ...S>
+  friend
+  class slot;
+  template<typename ...S>
+  friend
+  class signal;
 };
 
 template<typename ...Args>
@@ -103,7 +103,7 @@ class slot {
   slot &operator=(const slot &) = delete;
   ~slot() = default;
 
-  explicit slot(br_threaded_object *parent = nullptr) : _init(false), _parent(parent) {}
+  explicit slot(br_threaded_object *parent) : _init(false), _parent(parent) {}
   explicit slot(std::function<void(Args...)> function, br_threaded_object *parent = nullptr)
       : _init(true), _parent(parent) {
     _function = function;
@@ -119,7 +119,7 @@ class slot {
   }
   void call(Args... parameters) {
     if (!_init) {
-      throw std::runtime_error("Slot not initialized with a function, yet!");
+      throw std::runtime_error("slot is not initialized with a function");
     }
     _function(parameters...);
   }
@@ -132,8 +132,8 @@ class slot {
  private:
   void addEventToParent(Args... args) const {
     if (nullptr == _parent)
-      throw std::runtime_error("Slot has no parent!");
-    _parent->addEventToSlot([=] {
+      throw std::runtime_error("slot has not parent");
+    _parent->addEvent([=] {
       _function(args...);
     });
   }
@@ -150,12 +150,14 @@ class signal {
   signal &operator=(const signal &) = delete;
   ~signal() = default;
 
-  signal() = default;
+  explicit signal(br_threaded_object *parent) : _parent(parent) {};
 
  public:
   int connect(slot<Args...> &slot, ConnectionType type = ConnectionType::Auto) {
+    if (nullptr == _parent)
+      type = ConnectionType::Direct;
     if (type == ConnectionType::Auto) {
-      if (std::this_thread::get_id() == slot.getThreadId())
+      if (_parent->getThreadId() == slot.getThreadId())
         type = ConnectionType::Direct;
       else
         type = ConnectionType::Queued;
@@ -173,16 +175,20 @@ class signal {
   void emit(Args... parameters) {
     for (auto &slot: _connectionList) {
       ConnectionType type = slot.second._type;
-      if (type == ConnectionType::Auto) {
-        if (std::this_thread::get_id() == slot.second._slot->getThreadId())
-          type = ConnectionType::Direct;
-        else type = ConnectionType::Queued;
+      if (ConnectionType::Direct == type) {
+        if (nullptr != _parent) {
+          _parent->addEvent([=] {
+            (*slot.second._slot)(parameters...);
+          });
+        }
+      } else if (ConnectionType::Queued == type) {
+        if (nullptr == _parent)
+          throw std::runtime_error("signal has no parent");
+        _parent->addEvent([=] {
+          std::cout << "Emitting signal from: " << std::this_thread::get_id() << std::endl;
+          (*slot.second._slot).addEventToParent(parameters...);
+        });
       }
-
-      if (ConnectionType::Direct == type)
-        (*slot.second._slot)(parameters...);
-      else if (ConnectionType::Queued == type)
-        (*slot.second._slot).addEventToParent(parameters...);
     }
   }
 
@@ -195,6 +201,7 @@ class signal {
  private:
   static int _lastId;
   mutable std::map<int, Connection> _connectionList;
+  br_threaded_object *_parent;
 };
 template<typename ...S>
 int signal<S...>::_lastId = 0;

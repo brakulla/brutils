@@ -12,9 +12,11 @@
 
 class TestClass2 : public brutils::br_threaded_object {
  public:
-  TestClass2() : firstSlot(this), secondSlot(this), brutils::br_threaded_object() {
+  TestClass2() : firstSignal(this), firstSlot(this), secondSlot(this), brutils::br_threaded_object() {
+    std::cout << "TestClass2 thread id: " << this->getThreadId() << std::endl;
     firstSlot.setSlotFunction([=](std::string input) {
-      std::cout << "Received " << input << "now emitting from thread" << std::endl;
+      std::cout << "Running slot from: " << std::this_thread::get_id() << std::endl;
+      std::cout << "Received \"" << input << "\" now emitting from thread" << std::endl;
       emitWithinThread();
     });
     secondSlot.setSlotFunction([=](std::string parameter) {

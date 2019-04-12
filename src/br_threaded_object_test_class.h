@@ -11,7 +11,9 @@
 
 class TestClass : public brutils::br_threaded_object {
  public:
-  TestClass() : brutils::br_threaded_object() {}
+  TestClass() : firstSignal(this), secondSignal(this), brutils::br_threaded_object() {
+    std::cout << "TestClass thread id: " << this->getThreadId() << std::endl;
+  }
   ~TestClass() override {
     std::cout << "Destructor" << std::endl;
   };
