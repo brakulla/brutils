@@ -9,11 +9,9 @@
 
 #include <functional>
 #include <condition_variable>
-#include <vector>
 #include <map>
 #include <atomic>
 #include <thread>
-#include <any>
 #include <queue>
 
 namespace brutils
