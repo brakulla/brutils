@@ -28,27 +28,62 @@ class signal;
 template<typename ...Args>
 class slot;
 
+class br_object
+{
+public:
+    br_object(const br_object &) = delete;
+    br_object(br_object &&) = delete;
+    br_object &operator=(const br_object &) = delete;
+
+    explicit br_object(br_object *parent)
+        : _parent(parent)
+    {}
+    virtual ~br_object() = default;
+
+public:
+    virtual std::thread::id getThreadId() const
+    {
+        if (nullptr == _parent)
+            return std::this_thread::get_id();
+        else return _parent->getThreadId();
+    }
+
+    virtual void addEvent(const std::function<void()> &event)
+    {
+        if (nullptr == _parent)
+            throw std::runtime_error("Object has not parent");
+        _parent->addEvent(event);
+    }
+
+    virtual void addEvent(const std::function<void()> &event,
+                          bool &ec) noexcept // TODO: create error object and use it instead of bool
+    {
+        if (nullptr == _parent)
+            ec = true;
+        else _parent->addEvent(event, ec);
+    }
+
+private:
+    br_object *_parent;
+};
+
 /**
  * @class br_threaded_object
  * @brief A base class for objects that are to be run in a seperate thread.
  */
-class br_threaded_object
+class br_threaded_object: public br_object
 {
 public:
-    br_threaded_object(const br_threaded_object &) = delete;
-    br_threaded_object(br_threaded_object &&) = delete;
-    br_threaded_object &operator=(const br_threaded_object &) = delete;
-
     /**
      * @brief Constructor of br_threaded_object. In this constructor, the object is run on a newly created thread.
      */
     br_threaded_object()
-        : _running(true)
+        : _running(true), br_object(this)
     {
         _thread = std::thread(&br_threaded_object::run, this);
     };
 
-    virtual ~br_threaded_object()
+    virtual ~br_threaded_object() override
     {
         if (_running) {
             _running = false;
@@ -64,7 +99,7 @@ public:
      * @brief Returns thread id of br_threaded_object instance.
      * @return std::thread:id Thread id of br_threaded_object instance.
      */
-    std::thread::id getThreadId() const
+    std::thread::id getThreadId() const override
     {
         return _thread.get_id();
     }
@@ -73,8 +108,15 @@ public:
      * @brief Add an event to event loop of br_threaded_object instance.
      * @param [in] event const std::function<void()> - This event function will be run in the thread of br_threaded_object instance.
      */
-    void addEvent(const std::function<void()> &event)
+    void addEvent(const std::function<void()> &event) override
     {
+        _eventList.push(event);
+        _cond.notify_one();
+    }
+
+    void addEvent(const std::function<void()> &event, bool &ec) noexcept override
+    {
+        ec = true;
         _eventList.push(event);
         _cond.notify_one();
     }
@@ -127,7 +169,7 @@ public:
      *          then `setSlofFunction` function should be called after initialization, before making any connection.
      * @param [in] parent
      */
-    explicit slot(br_threaded_object *parent)
+    explicit slot(br_object *parent)
         : _init(false), _parent(parent)
     {}
     ~slot() = default;
@@ -137,7 +179,7 @@ public:
      * @param [in] function
      * @param [in] parent
      */
-    explicit slot(std::function<void(Args...)> function, br_threaded_object *parent = nullptr)
+    explicit slot(std::function<void(Args...)> function, br_object *parent = nullptr)
         : _init(true), _parent(parent)
     {
         _function = function;
@@ -190,7 +232,7 @@ public:
 private:
     bool _init;
     std::function<void(Args...)> _function;
-    br_threaded_object *_parent;
+    br_object *_parent;
 
 private:
     /**
@@ -226,7 +268,7 @@ public:
     signal(signal &&) = delete;
     signal &operator=(const signal &) = delete;
 
-    explicit signal(br_threaded_object *parent)
+    explicit signal(br_object *parent)
         : _parent(parent)
     {};
     ~signal() = default;
@@ -326,7 +368,7 @@ private:
     static int _lastId;
     std::vector<slot<Args...> *> _directConnections;
     std::vector<slot<Args...> *> _queuedConnections;
-    br_threaded_object *_parent;
+    br_object *_parent;
 
 private:
     void callDirectConnections(Args... parameters)

@@ -8,6 +8,7 @@
 
 #include "br_threaded_object_test_class.h"
 #include "br_threaded_object_test_class_2.h"
+#include "br_object_test_class.h"
 
 void testSlot(std::string const &input) {
   std::cout << "This is slot input parameter: " << input << std::endl;
@@ -20,6 +21,11 @@ int main() {
   firstTestClass.firstSignal.connect(secondTestClass.firstSlot);
 //  secondTestClass.firstSignal.connect(secondTestClass.firstSlot);
 
+    br_object_test_class thirdTestClass(&firstTestClass);
+    thirdTestClass.firstSignal.connect(secondTestClass.firstSlot);
+
+    firstTestClass.firstSignal.connect(thirdTestClass.firstSlot);
+
   std::cout << "Doing some shit" << std::endl;
   std::this_thread::sleep_for(std::chrono::seconds(3));
   std::cout << "Emitting signal" << std::endl;
@@ -29,6 +35,12 @@ int main() {
   std::cout << "Emitted" << std::endl;
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
+
+
+    std::cout << "Emitting thirdTestClass firstSignal" << std::endl;
+    thirdTestClass.firstSignal.emit("Tester 3");
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
 //  std::cout << "Doing second shit" << std::endl;
 //  std::this_thread::sleep_for(std::chrono::seconds(1));
 //  std::cout << "Emitting second signal" << std::endl;
