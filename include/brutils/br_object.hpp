@@ -39,6 +39,9 @@ public:
     br_threaded_object(br_threaded_object &&) = delete;
     br_threaded_object &operator=(const br_threaded_object &) = delete;
 
+    /**
+     * @brief Constructor of br_threaded_object. In this constructor, the object is run on a newly created thread.
+     */
     br_threaded_object()
         : _running(true)
     {
@@ -57,6 +60,10 @@ public:
     };
 
 public:
+    /**
+     * @brief Returns thread id of br_threaded_object instance.
+     * @return std::thread:id Thread id of br_threaded_object instance.
+     */
     std::thread::id getThreadId() const
     {
         return _thread.get_id();
@@ -138,6 +145,18 @@ public:
 
 public:
     /**
+     * @brief Returns thread of signal.
+     *          If parent is given, returns parent thread; returns caller thread id, otherwise
+     * @return std::thread::id
+     */
+    std::thread::id getThreadId()
+    {
+        if (nullptr != _parent)
+            return _parent->getThreadId();
+        else return std::this_thread::get_id();
+    }
+
+    /**
      * @brief Used to set the function to be called when a connected signal is emitted.
      * @param [in] function
      */
@@ -181,15 +200,16 @@ private:
     void addEventToParent(Args... args) const
     {
         if (nullptr == _parent)
-            throw std::runtime_error("slot has not parent");
+            return;
         _parent->addEvent([=]
                           {
                               _function(args...);
                           });
     }
-    std::thread::id getThreadId() const
+
+    bool hasParent()
     {
-        return _parent->getThreadId();
+        return nullptr != _parent;
     }
 };
 
@@ -213,34 +233,69 @@ public:
 
 public:
     /**
+     * @brief Returns thread of signal.
+     *          If parent is given, returns parent thread; returns caller thread id, otherwise
+     * @return std::thread::id
+     */
+    std::thread::id getThreadId()
+    {
+        if (nullptr != _parent)
+            return _parent->getThreadId();
+        else return std::this_thread::get_id();
+    }
+
+    /**
      * @brief Creates a connection between the instance and input slot instance in given `ConnectionType`.
      * @param [in] slot
      * @param [in] type
      * @return id Returns created connection identifier.
      */
-    int connect(slot<Args...> &slot, ConnectionType type = ConnectionType::Auto)
+    void connect(slot<Args...> &slot, ConnectionType type = ConnectionType::Auto)
     {
-        if (nullptr == _parent)
-            type = ConnectionType::Direct;
-        if (type == ConnectionType::Auto) {
-            if (_parent->getThreadId() == slot.getThreadId())
-                type = ConnectionType::Direct;
-            else
-                type = ConnectionType::Queued;
+        ConnectionType connectionType = type;
+        if (nullptr == _parent) {
+            connectionType = ConnectionType::Direct;
         }
-        _connectionList.insert(std::make_pair(++_lastId, Connection{&slot, type}));
-        return _lastId;
+        else if (!slot.hasParent()) {
+            connectionType = ConnectionType::Direct;
+        }
+        else if (type == ConnectionType::Auto) {
+            if (getThreadId() == slot.getThreadId())
+                connectionType = ConnectionType::Direct;
+            else
+                connectionType = ConnectionType::Queued;
+        }
+
+        if (connectionType == ConnectionType::Direct)
+            _directConnections.push_back(&slot);
+        else _queuedConnections.push_back(&slot);
+    }
+
+    /**
+     * @brief Destroys all connections of this signal.
+     */
+    void disconnect()
+    {
+        _directConnections.clear();
+        _queuedConnections.clear();
     }
 
     /**
      * @brief Destroys the connection previously created by `connect` function.
-     * @param id Connection identifier. If not given, all connections are destroyed.
+     * @param slot Slot the connection will be disconnected with.
      */
-    void disconnect(int id = -1)
+    void disconnect(slot<Args...> &slot)
     {
-        if (-1 == id)
-            _connectionList.clear();
-        else _connectionList.erase(id);
+        for (auto it = _directConnections.begin(); it != _directConnections.end(); ++it) {
+            if (*it == slot)
+                it = _directConnections.erase(it);
+            else ++it;
+        }
+        for (auto it = _queuedConnections.begin(); it != _queuedConnections.end(); ++it) {
+            if (*it == slot)
+                it = _queuedConnections.erase(it);
+            else ++it;
+        }
     }
 
     /**
@@ -249,43 +304,46 @@ public:
      */
     void emit(Args... parameters)
     {
-        for (auto &slot: _connectionList) {
-            ConnectionType type = slot.second._type;
-            if (ConnectionType::Direct == type) {
-                if (nullptr != _parent) {
-                    _parent->addEvent([=]
-                                      {
-                                          (*slot.second._slot)(parameters...);
-                                      });
-                }
+        if (nullptr == _parent) {
+            callDirectConnections(parameters...);
+        }
+        else {
+            if (std::this_thread::get_id() == _parent->getThreadId()) {
+                callDirectConnections(parameters...);
+                callQueuedConnections(parameters...);
             }
-            else if (ConnectionType::Queued == type) {
-                if (nullptr == _parent)
-                    throw std::runtime_error("signal has no parent");
-                _parent->addEvent([=]
+            else {
+                _parent->addEvent([&]
                                   {
-                                      std::cout << "Emitting signal from: " << std::this_thread::get_id() << std::endl;
-                                      (*slot.second._slot).addEventToParent(parameters...);
+                                      callDirectConnections(parameters...);
+                                      callQueuedConnections(parameters...);
                                   });
             }
         }
     }
 
 private:
-    struct Connection
-    {
-        slot<Args...> *_slot;
-        ConnectionType _type;
-    };
+    static int _lastId;
+    std::vector<slot<Args...> *> _directConnections;
+    std::vector<slot<Args...> *> _queuedConnections;
+    br_threaded_object *_parent;
 
 private:
-    static int _lastId;
-    mutable std::map<int, Connection> _connectionList;
-    br_threaded_object *_parent;
+    void callDirectConnections(Args... parameters)
+    {
+        for (auto slot: _directConnections) {
+            slot->call(parameters...);
+        }
+    }
+
+    void callQueuedConnections(Args... parameters)
+    {
+        for (auto slot: _queuedConnections) {
+            slot->addEventToParent(parameters...);
+        }
+    }
 };
 
-template<typename ...S>
-int signal<S...>::_lastId = 0;
 }
 
 #endif //BRUTILS_BR_OBJECT_HPP

@@ -9,6 +9,7 @@
 
 #include <brutils/br_object.hpp>
 #include <string>
+#include <sstream>
 
 class TestClass2 : public brutils::br_threaded_object {
  public:
@@ -20,7 +21,8 @@ class TestClass2 : public brutils::br_threaded_object {
       emitWithinThread();
     });
     secondSlot.setSlotFunction([=](std::string parameter) {
-      std::cout << "This is received from second slot: " << parameter << std::endl;
+        std::cout << "This is received from second slot: " << parameter << " it thread: " << std::this_thread::get_id()
+                  << std::endl;
     });
   }
   ~TestClass2() override {
@@ -34,7 +36,9 @@ class TestClass2 : public brutils::br_threaded_object {
  private:
   void emitWithinThread() {
     firstSignal.connect(secondSlot);
-    firstSignal.emit("This is emitted within thread");
+      std::stringstream ss;
+      ss << "This is emitted within thread: " << std::this_thread::get_id();
+      firstSignal.emit(ss.str());
   }
 };
 

@@ -23,7 +23,9 @@ int main() {
   std::cout << "Doing some shit" << std::endl;
   std::this_thread::sleep_for(std::chrono::seconds(3));
   std::cout << "Emitting signal" << std::endl;
-  firstTestClass.firstSignal.emit("Sending some random shit within class");
+    std::stringstream ss;
+    ss << "Sending some random shit within class within thread: " << std::this_thread::get_id();
+    firstTestClass.firstSignal.emit(ss.str());
   std::cout << "Emitted" << std::endl;
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
