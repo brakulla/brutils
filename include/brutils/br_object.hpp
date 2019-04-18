@@ -121,9 +121,11 @@ public:
         _cond.notify_one();
     }
 
+protected:
+    std::thread _thread;
+
 private:
     std::atomic_bool _running;
-    std::thread _thread;
 
 private:
     std::mutex _condMutex;
@@ -355,7 +357,7 @@ public:
                 callQueuedConnections(parameters...);
             }
             else {
-                _parent->addEvent([&]
+                _parent->addEvent([=]
                                   {
                                       callDirectConnections(parameters...);
                                       callQueuedConnections(parameters...);
