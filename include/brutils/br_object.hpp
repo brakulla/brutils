@@ -63,6 +63,11 @@ public:
         else _parent->addEvent(event, ec);
     }
 
+    virtual br_object *getRootObject()
+    {
+        return _parent;
+    }
+
 private:
     br_object *_parent;
 };
@@ -119,6 +124,11 @@ public:
         ec = true;
         _eventList.push(event);
         _cond.notify_one();
+    }
+
+    br_object *getRootObject() override
+    {
+        return dynamic_cast<br_object *>(this);
     }
 
 protected:
@@ -196,7 +206,7 @@ public:
     std::thread::id getThreadId()
     {
         if (nullptr != _parent)
-            return _parent->getThreadId();
+            return _parent->getRootObject()->getThreadId();
         else return std::this_thread::get_id();
     }
 
@@ -245,7 +255,7 @@ private:
     {
         if (nullptr == _parent)
             return;
-        _parent->addEvent([=]
+        _parent->getRootObject()->addEvent([=]
                           {
                               _function(args...);
                           });
@@ -284,7 +294,7 @@ public:
     std::thread::id getThreadId()
     {
         if (nullptr != _parent)
-            return _parent->getThreadId();
+            return _parent->getRootObject()->getThreadId();
         else return std::this_thread::get_id();
     }
 
@@ -298,6 +308,9 @@ public:
     {
         ConnectionType connectionType = type;
         if (nullptr == _parent) {
+            connectionType = ConnectionType::Direct;
+        }
+        else if (nullptr == _parent->getRootObject()) {
             connectionType = ConnectionType::Direct;
         }
         else if (!slot.hasParent()) {
@@ -357,7 +370,7 @@ public:
                 callQueuedConnections(parameters...);
             }
             else {
-                _parent->addEvent([=]
+                _parent->getRootObject()->addEvent([=]
                                   {
                                       callDirectConnections(parameters...);
                                       callQueuedConnections(parameters...);
