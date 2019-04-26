@@ -7,7 +7,7 @@
 #ifndef BRUTILS_BR_THREADED_OBJECT_TEST_CLASS_H
 #define BRUTILS_BR_THREADED_OBJECT_TEST_CLASS_H
 
-#include <brutils/br_object.hpp>
+#include <br_object.hpp>
 
 class TestClass : public brutils::br_threaded_object {
  public:

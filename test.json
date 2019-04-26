@@ -1,0 +1,12 @@
+{
+  "testValue": "testString",
+  "testMap": {
+    "testMapValue": "testMapString",
+    "testMapValue2": "testMapString2"
+  },
+  "testList": [
+    "testListString1",
+    "testListString2"
+  ],
+  "testInt": 3
+}

@@ -4,9 +4,11 @@
 #include <iostream>
 #include <thread>
 #include <any>
+#include <fstream>
 
-#include <brutils/br_object.hpp>
-#include <brutils/variant.h>
+#include <br_object.hpp>
+#include <variant.h>
+#include <json_parser.h>
 
 #include "br_threaded_object_test_class.h"
 #include "br_threaded_object_test_class_2.h"
@@ -19,6 +21,7 @@ void testSlot(std::string const &input)
 
 void recursiveVariantPrinter(std::any inputMap, int depth = 0)
 {
+    std::cout << "recursiveVarPrinter " << depth << std::endl;
     if (inputMap.type() == typeid(std::string)) {
         std::cout << depth << "This is string: " << std::any_cast<std::string>(inputMap) << std::endl;
     }
@@ -34,6 +37,7 @@ void recursiveVariantPrinter(std::any inputMap, int depth = 0)
 
 void recursiveVarPrinter(brutils::variant var, int depth = 0)
 {
+    std::cout << "recursiveVarPrinter " << depth << std::endl;
     std::string tab;
     for (int i = 0; i < depth; ++i)
         tab.append("-");
@@ -50,6 +54,62 @@ void recursiveVarPrinter(brutils::variant var, int depth = 0)
         std::cout << tab << "Value: " << var.toString() << std::endl;
     }
 }
+
+void recursivePrinter(brutils::variant var, int depth = 0);
+
+void recursiveMapPrint(brutils::variant_map map, int depth = 0)
+{
+//    std::cout << "recursiveMapPrint " << depth << std::endl;
+
+    std::string tab;
+    for (int i = 0; i < depth; ++i)
+        tab.append("-");
+
+    for (auto &item: map) {
+        std::cout << tab << " " << item.first << std::endl;
+        recursivePrinter(item.second, depth + 1);
+    }
+}
+
+void recursiveListPrint(brutils::variant_list list, int depth = 0)
+{
+//    std::cout << "recursiveListPrint " << depth << std::endl;
+
+    std::string tab;
+    for (int i = 0; i < depth; ++i)
+        tab.append("-");
+
+    for (auto &item: list) {
+        recursivePrinter(item, depth + 1);
+    }
+}
+
+void recursivePrinter(brutils::variant var, int depth)
+{
+//    std::cout << "recursivePrinter " << depth << std::endl;
+
+    std::string tab;
+    for (int i = 0; i < depth; ++i)
+        tab.append("-");
+
+    if (var.isMap()) {
+//        std::cout << "it is map " << depth << std::endl;
+        recursiveMapPrint(var.toMap(), depth + 1);
+    }
+    else if (var.isList()) {
+//        std::cout << "it is list " << depth << std::endl;
+        recursiveListPrint(var.toList(), depth + 1);
+    }
+    else if (var.isValue()) {
+//        std::cout << "it is list " << depth << std::endl;
+        std::cout << tab << " " << var.toString() << std::endl;
+    }
+    else {
+        std::cout << "no good " << var.getTypeInfo()->name() << std::endl;
+    }
+}
+
+
 
 int main()
 {
@@ -152,6 +212,21 @@ int main()
     recursiveVarPrinter(map);
 
     recursiveVarPrinter(map);
+
+    std::cout << "Here comes the json parser" << std::endl;
+    std::ifstream t("/home/burakon/Projects/per/brutils/test.json");
+    std::string str((std::istreambuf_iterator<char>(t)),
+                    std::istreambuf_iterator<char>());
+
+    brutils::json_parser parser;
+    std::cout << "Here comes the json parser2" << std::endl;
+    brutils::variant json = parser.parse(str);
+    std::cout << "Here comes the json parser3" << std::endl;
+    if (json.isValid())
+        recursivePrinter(json);
+    else
+        std::cout << "Here comes the json parser4" << std::endl;
+
 
 
     std::cout << "Finished" << std::endl;

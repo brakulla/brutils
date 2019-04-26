@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <any>
 
 namespace brutils
@@ -18,10 +19,18 @@ class variant;
 
 typedef std::map<std::string, variant> variant_map;
 
+typedef std::vector<variant> variant_list;
+
 class variant
 {
 public:
-    variant() = default;
+    variant()
+        : _valid(false)
+    {}
+    variant(nullptr_t aNullptr)
+    {
+        _valid = true;
+    }
     variant(bool val)
     {
         setValue(val);
@@ -42,11 +51,14 @@ public:
     {
         setValue(val);
     }
+    variant(variant_list val)
+    {
+        setValue(val);
+    }
     variant(variant_map val)
     {
         setValue(val);
     }
-
     ~variant() = default;
 
     template<class T>
@@ -54,11 +66,43 @@ public:
     {
         _type = const_cast<std::type_info *>(&typeid(t));
         _value = t;
+        _valid = true;
     }
 
     std::type_info *getTypeInfo()
     {
         return _type;
+    }
+
+    bool isValid()
+    {
+        return _valid;
+    }
+
+    bool isNull()
+    {
+        return !_value.has_value();
+    }
+
+    bool isMap()
+    {
+        if (!isNull())
+            return _value.type() == typeid(variant_map);
+        return false;
+    }
+
+    bool isList()
+    {
+        if (!isNull())
+            return _value.type() == typeid(variant_list);
+        return false;
+    }
+
+    bool isValue()
+    {
+        if (!isNull())
+            return _value.type() != typeid(variant_map) && _value.type() != typeid(variant_list);
+        return false;
     }
 
     bool toBool()
@@ -86,6 +130,11 @@ public:
         return value<std::string>();
     }
 
+    variant_list toList()
+    {
+        return value<variant_list>();
+    }
+
     variant_map toMap()
     {
         return value<variant_map>();
@@ -100,6 +149,7 @@ public:
     }
 
 private:
+    bool _valid;
     std::type_info *_type;
     std::any _value;
 };
