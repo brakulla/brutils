@@ -19,7 +19,8 @@ namespace brutils {
       cont.push_back(token);
   }
   template <class Container>
-  static void split_string(const std::string &str, Container &cont, std::string delim = " ") {
+  static void split_string(const std::string &str, Container &cont, const std::string delim = " ")
+  {
     std::string token;
     for(unsigned long i = 0, index = 0; i < str.size(); i = index+delim.size()) {
       index = str.find(delim, i);
@@ -32,12 +33,16 @@ namespace brutils {
     }
   }
   static bool str_startsWith(const std::string baseStr, const std::string subStr) {
-    return 0 == baseStr.find(subStr);
+      if (subStr.size() >= baseStr.size())
+          return 0 == baseStr.find(subStr);
+      return false;
   }
   static int str_startsWithMatch(const std::string baseStr, const std::string subStr) {
-    if (0 == baseStr.find(subStr))
-      return (int)baseStr.size();
-    else return 0;
+      if (subStr.size() >= baseStr.size()) {
+          if (0 == baseStr.find(subStr))
+              return (int) baseStr.size();
+      }
+      return 0;
   }
   static bool str_contains(const std::string baseStr, const std::string subStr) {
     return std::string::npos != baseStr.find(subStr);
