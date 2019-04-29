@@ -11,13 +11,13 @@ include(GNUInstallDirs)
 
 if (CMAKE_BUILD_TYPE MATCHES Test)
     include_directories(include/brutils)
-    add_executable(brutilsTest src/main.cpp src/brutils/json_parser.cpp)
+    add_executable(brutilsTest main.cpp src/brutils/json_parser.cpp src/brutils/json_generator.cpp)
     target_link_libraries(brutilsTest
             #            brutils
             pthread
             )
 else ()
-    include_directories(include/brutils)
+    include_directories(include)
     add_library(brutils STATIC
             #        src/main.cpp
             include/brutils/queue_pc.hpp
@@ -26,7 +26,9 @@ else ()
             include/brutils/br_object.hpp
             include/brutils/variant.h
             include/brutils/json_parser.h
-            src/brutils/json_parser.cpp)
+            include/brutils/json_generator.h
+            src/brutils/json_parser.cpp
+            src/brutils/json_generator.cpp)
     set_target_properties(brutils PROPERTIES
             LINKER_LANGUAGE CXX
             VERSION ${PROJECT_VERSION}

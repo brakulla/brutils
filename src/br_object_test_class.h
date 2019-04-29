@@ -7,7 +7,7 @@
 #ifndef BR_OBJECT_TEST_CLASS_H
 #define BR_OBJECT_TEST_CLASS_H
 
-#include "br_object.hpp"
+#include "brutils/br_object.hpp"
 
 class br_object_test_class: brutils::br_object
 {

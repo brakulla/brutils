@@ -9,10 +9,11 @@
 #include <br_object.hpp>
 #include <variant.h>
 #include <json_parser.h>
+#include <json_generator.h>
 
-#include "br_threaded_object_test_class.h"
-#include "br_threaded_object_test_class_2.h"
-#include "br_object_test_class.h"
+#include "src/br_threaded_object_test_class.h"
+#include "src/br_threaded_object_test_class_2.h"
+#include "src/br_object_test_class.h"
 
 void testSlot(std::string const &input)
 {
@@ -225,8 +226,14 @@ int main()
     std::cout << "Here comes the json parser2" << std::endl;
     brutils::variant json = parser.parse(str);
     std::cout << "Here comes the json parser3" << std::endl;
-    if (json.isValid())
-        recursivePrinter(json);
+    if (json.isValid()) {
+        brutils::json_generator generator(false);
+        auto output = generator.generate(json);
+        std::cout << "Generator result: " << output << std::endl;
+        std::ofstream out("/home/burakon/Projects/per/brutils/output.json");
+        out << output;
+//        recursivePrinter(json);
+    }
     else
         std::cout << "Here comes the json parser4" << std::endl;
 

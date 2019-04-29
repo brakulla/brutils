@@ -84,6 +84,41 @@ public:
         return !_value.has_value();
     }
 
+    bool isBool()
+    {
+        if (!isNull())
+            return _value.type() == typeid(bool);
+        return false;
+    }
+
+    bool isInt()
+    {
+        if (!isNull())
+            return _value.type() == typeid(int);
+        return false;
+    }
+
+    bool isFloat()
+    {
+        if (!isNull())
+            return _value.type() == typeid(float);
+        return false;
+    }
+
+    bool isDouble()
+    {
+        if (!isNull())
+            return _value.type() == typeid(double);
+        return false;
+    }
+
+    bool isString()
+    {
+        if (!isNull())
+            return _value.type() == typeid(std::string);
+        return false;
+    }
+
     bool isMap()
     {
         if (!isNull())

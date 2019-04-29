@@ -7,7 +7,7 @@
 #ifndef BRUTILS_BR_THREADED_OBJECT_TEST_CLASS_2_H
 #define BRUTILS_BR_THREADED_OBJECT_TEST_CLASS_2_H
 
-#include <br_object.hpp>
+#include <brutils/br_object.hpp>
 #include <string>
 #include <sstream>
 
