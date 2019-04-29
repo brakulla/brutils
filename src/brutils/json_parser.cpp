@@ -137,7 +137,7 @@ variant json_parser::parseValue(std::string_view &input)
         val = parseString(input);
         std::cout << "parseString " << val.toString() << std::endl;
     }
-    else if (std::isdigit(input.at(0))) { // number
+    else if (std::isdigit(input.at(0)) || '-' == input.at(0)) { // number
         std::cout << "parseNumber " << std::endl;
         val = parseNumber(input);
         std::cout << "parseNumber " << val.toFloat() << std::endl;
@@ -170,11 +170,16 @@ variant json_parser::parseString(std::string_view &input)
     else return variant();
 
     int size = 0;
+    int continueIndex = 0;
     while (true) {
-        size = input.find_first_of('\"');
+        size = input.find_first_of('\"', continueIndex);
         if (std::string_view::npos != size) {
-            if ('\\' == input.at(size - 1))
+            if (size == 0)
+                break;
+            if ('\\' == input.at(size - 1)) {
+                continueIndex = size;
                 continue;
+            }
             else break;
         }
         else {
@@ -218,8 +223,10 @@ variant json_parser::parseNumber(std::string_view &input)
         return variant();
     }
 
-    if ('.' != input.at(0) && 'e' != input.at(0) && 'E' != input.at(0))
-        return variant();
+    if ('.' != input.at(0) && 'e' != input.at(0) && 'E' != input.at(0)) {
+        removeWhitespace(input);
+        return number;
+    }
 
     if ('.' == input.at(0)) {
         input.remove_prefix(1); // remove '.'
@@ -260,7 +267,7 @@ variant json_parser::parseLiteral(std::string_view &input)
     variant output;
 
     int size = 0;
-    for (size = 0; std::isalpha(input.at(0)); ++size);
+    for (size = 0; std::isalpha(input.at(size)); ++size);
 
     std::string_view val(input.data(), size);
     if ("true" == val) {
@@ -286,9 +293,12 @@ variant json_parser::parseLiteral(std::string_view &input)
 float json_parser::parseInt(std::string_view &input)
 {
     std::cout << "json_parser::parseInt" << std::endl;
+    int strLength = 0;
+    for (; isdigit(input.at(strLength)); ++strLength);
+
     float val = 0;
     for (int i = 0; isdigit(input.at(0)); ++i) {
-        val += (input.at(0) - '0') * pow(10, i);
+        val += (input.at(0) - '0') * pow(10, strLength - i - 1);
         input.remove_prefix(1);
     }
     std::cout << "int: " << val << std::endl;
@@ -300,7 +310,7 @@ float json_parser::parseAfterInt(std::string_view &input)
     std::cout << "json_parser::parseAfterInt" << std::endl;
     float val = 0;
     for (int i = 0; isdigit(input.at(0)); ++i) {
-        val += (input.at(0) - '0') / pow(10, i);
+        val += (input.at(0) - '0') / pow(10, i + 1);
         input.remove_prefix(1);
     }
 
@@ -311,9 +321,7 @@ float json_parser::parseAfterInt(std::string_view &input)
 void json_parser::removeWhitespace(std::string_view &input)
 {
 //    std::cout << "json_parser::removeWhitespace" << std::endl;
-    if (input.empty())
-        return;
-    while (std::isspace(input.at(0))) {
+    while (!input.empty() && std::isspace(input.at(0))) {
         input.remove_prefix(1);
     }
 }

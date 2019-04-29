@@ -102,7 +102,10 @@ void recursivePrinter(brutils::variant var, int depth)
     }
     else if (var.isValue()) {
 //        std::cout << "it is list " << depth << std::endl;
-        std::cout << tab << " " << var.toString() << std::endl;
+        if (var.toFloat() != 0)
+            std::cout << tab << " " << var.toFloat() << std::endl;
+        else
+            std::cout << tab << " " << var.toString() << std::endl;
     }
     else {
         std::cout << "no good " << var.getTypeInfo()->name() << std::endl;
