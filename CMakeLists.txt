@@ -20,10 +20,12 @@ else ()
     include_directories(include)
     add_library(brutils STATIC
             #        src/main.cpp
-            include/brutils/queue_pc.hpp
-            include/brutils/string_utils.hpp
+            include/brutils/timers/timer.h
+            include/brutils/timers/combined_timer.h
+            include/brutils/queue_pc.h
+            include/brutils/string_utils.h
             include/brutils/timer.hpp
-            include/brutils/br_object.hpp
+            include/brutils/br_object.h
             include/brutils/variant.h
             include/brutils/json_parser.h
             include/brutils/json_generator.h

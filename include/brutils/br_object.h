@@ -4,8 +4,8 @@
  * Description
  */
 
-#ifndef BRUTILS_BR_OBJECT_HPP
-#define BRUTILS_BR_OBJECT_HPP
+#ifndef BRUTILS_BR_OBJECT_H
+#define BRUTILS_BR_OBJECT_H
 
 #include <functional>
 #include <condition_variable>
@@ -403,4 +403,4 @@ private:
 
 }
 
-#endif //BRUTILS_BR_OBJECT_HPP
+#endif //BRUTILS_BR_OBJECT_H

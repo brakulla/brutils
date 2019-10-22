@@ -27,7 +27,7 @@ public:
     variant()
         : _valid(false)
     {}
-    variant(nullptr_t aNullptr)
+    variant(std::nullptr_t aNullptr)
     {
         _valid = true;
     }

@@ -4,8 +4,8 @@
  * Description
  */
 
-#ifndef SINGLETON_CRTP_HPP
-#define SINGLETON_CRTP_HPP
+#ifndef SINGLETON_CRTP_H
+#define SINGLETON_CRTP_H
 
 namespace brutils
 {
@@ -34,4 +34,4 @@ private:
 
 }
 
-#endif //SINGLETON_CRTP_HPP
+#endif //SINGLETON_CRTP_H
