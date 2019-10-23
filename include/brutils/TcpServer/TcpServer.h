@@ -9,7 +9,7 @@
 #define DEFAULT_CONNECTION_TIMEOUT_MSEC (180*1000) /* 180 seconds - 115 seconds on Firefox*/
 #define DEFAULT_POLL_TIMEOUT_MSEC (500) /* 500 msecs */
 
-#include "brutils/br_object.hpp"
+#include "brutils/br_object.h"
 #include "brutils/TcpSocket/TcpSocket.h"
 #include "brutils/timers/combined_timer.h"
 
@@ -20,7 +20,8 @@
 #include <set>
 #include <poll.h>
 
-namespace brutils {
+namespace brutils
+{
 
 enum class TcpServerState
 {
@@ -34,12 +35,12 @@ enum class TcpServerState
 class TcpServer : br_object
 {
  public:
-  TcpServer(br_object *parent = nullptr);
+  explicit TcpServer(br_object *parent = nullptr);
   TcpServer(uint16_t maxConnectionSize,
             uint64_t connectionTimeout_msec,
             uint64_t readBufferSize,
             br_object *parent = nullptr);
-  ~TcpServer();
+  ~TcpServer() override;
 
  public: // signals
   signal<std::shared_ptr<TcpSocket>> newIncomingConnection;
@@ -50,11 +51,6 @@ class TcpServer : br_object
   bool listen(uint16_t port, std::string address = "");
   bool stop();
   bool waitForFinished();
-
-  int maxConnectionSize();
-  bool setMaxConnectionSize();
-
-  int activeConnectionSize();
 
  private:
   void run();
@@ -71,7 +67,7 @@ class TcpServer : br_object
   bool addToSocketList(int socketFd);
   bool removeFromSocketList(int socketFd);
 
-  bool addToActiveConnections(std::shared_ptr<TcpSocket> socket);
+  bool addToActiveConnections(std::shared_ptr<TcpSocket> &socket);
   std::shared_ptr<TcpSocket> getActiveConnection(int socketDescriptor);
   bool removeFromActiveConnections(int socketDescriptor);
 

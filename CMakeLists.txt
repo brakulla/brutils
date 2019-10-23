@@ -20,11 +20,15 @@ else ()
     include_directories(include)
     add_library(brutils STATIC
             #        src/main.cpp
-            include/brutils/timers/timer.h
+            include/brutils/TcpSocket/TcpSocket.h
+            src/brutils/TcpSocket/TcpSocket.cpp
+            include/brutils/TcpServer/TcpServer.h
+            src/brutils/TcpServer/TcpServer.cpp
             include/brutils/timers/combined_timer.h
+            src/brutils/timers/combined_timer.cpp
+            include/brutils/timers/timer.h
             include/brutils/queue_pc.h
             include/brutils/string_utils.h
-            include/brutils/timer.hpp
             include/brutils/br_object.h
             include/brutils/variant.h
             include/brutils/json_parser.h

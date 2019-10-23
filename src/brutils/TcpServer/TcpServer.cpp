@@ -11,7 +11,6 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <fcntl.h>
-#include <link.h>
 
 using namespace brutils;
 
@@ -24,7 +23,8 @@ TcpServer::TcpServer(br_object *parent) :
     _readBufferSize(0),
     _serverSD(-1),
     _serverState(TcpServerState::INACTIVE),
-    _running(false)
+    _running(false),
+    _socketList(nullptr)
 {
 
 }
@@ -40,7 +40,8 @@ TcpServer::TcpServer(uint16_t maxConnectionSize,
     _readBufferSize(readBufferSize),
     _serverSD(-1),
     _serverState(TcpServerState::INACTIVE),
-    _running(false)
+    _running(false),
+    _socketList(nullptr)
 {
 
 }
@@ -54,7 +55,7 @@ TcpServer::~TcpServer()
   }
   delete[] _socketList;
 }
-bool TcpServer::listen(uint16_t port, std::string address)
+bool TcpServer::listen(uint16_t port, std::string const address) // NOLINT(performance-unnecessary-value-param)
 {
   _serverState = TcpServerState::STARTING;
 
@@ -65,20 +66,20 @@ bool TcpServer::listen(uint16_t port, std::string address)
   }
 
   int opt = 1;
-  if (0 != ::setsockopt(_serverSD, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+  if (0 != ::setsockopt(_serverSD, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) { // NOLINT(hicpp-signed-bitwise)
     // TODO: set error
     return false;
   }
 
   int flags = ::fcntl(_serverSD, F_GETFL);
-  if (0 < fcntl(_serverSD, F_SETFL, flags | O_NONBLOCK)) {
+  if (0 < fcntl(_serverSD, F_SETFL, flags | O_NONBLOCK)) { // NOLINT(hicpp-signed-bitwise)
     // TODO: set error
     return false;
   }
 
-  sockaddr_in serverAddr;
+  sockaddr_in serverAddr {0};
   serverAddr.sin_family = AF_INET;
-  serverAddr.sin_port = htons(port);
+  serverAddr.sin_port = htons(port); // NOLINT(hicpp-signed-bitwise)
   if (address.empty()) {
     serverAddr.sin_addr.s_addr = INADDR_ANY;
   } else {
@@ -106,17 +107,27 @@ bool TcpServer::listen(uint16_t port, std::string address)
 
   _running = true;
   _thread = std::thread(&TcpServer::run, this);
+
+  return true;
 }
 bool TcpServer::stop()
 {
+  if (TcpServerState::INACTIVE != _serverState && TcpServerState::STOPPING != _serverState) {
+    return false;
+  }
   _serverState = TcpServerState::STOPPING;
   _running = false;
+  return true;
 }
 bool TcpServer::waitForFinished()
 {
+  if (TcpServerState::STOPPING != _serverState) {
+    return false;
+  }
   if (_thread.joinable()) {
     _thread.join();
   }
+  return true;
 }
 void TcpServer::run()
 {
@@ -179,7 +190,7 @@ bool TcpServer::processSockets()
     // NOTE: data received and connection closed events can happen at the same time
     // check incoming data
     bool dataReceived = false;
-    if (POLLIN == (_socketList[index].revents & POLLIN)) {
+    if (POLLIN == (_socketList[index].revents & POLLIN)) { // NOLINT(hicpp-signed-bitwise)
       if (!newIncomingData(_socketList[index].fd)) {
         // TODO: notify error
       } else {
@@ -188,7 +199,7 @@ bool TcpServer::processSockets()
     }
 
     // check connection close event
-    if (POLLHUP == (_socketList[index].revents & POLLHUP)) {
+    if (POLLHUP == (_socketList[index].revents & POLLHUP)) { // NOLINT(hicpp-signed-bitwise)
       if (!connectionClosed(_socketList[index].fd)) {
         // TODO: notify error
       }
@@ -199,6 +210,7 @@ bool TcpServer::processSockets()
       }
     }
   }
+  return true;
 }
 bool TcpServer::acceptNewConnections()
 {
@@ -226,6 +238,7 @@ bool TcpServer::acceptNewConnections()
       return false;
     }
   }
+  return true;
 }
 void TcpServer::timeoutOnSocket(int16_t timerId)
 {
@@ -254,9 +267,9 @@ bool TcpServer::addNewConnection(int socketDescriptor)
   // TODO: give configuration parameters to TcpSocket below
   std::shared_ptr<TcpSocket> tcpSocket;
   if (_readBufferSize > 0) {
-    tcpSocket = std::make_shared<TcpSocket>(socketDescriptor, ConnectionStatus::CONNECTED, _readBufferSize, this);
+    tcpSocket = std::make_shared<TcpSocket>(socketDescriptor, ConnectionStatus::CONNECTED, _readBufferSize, (br_object*)this);
   } else {
-    tcpSocket = std::make_shared<TcpSocket>(socketDescriptor, ConnectionStatus::CONNECTED, this);
+    tcpSocket = std::make_shared<TcpSocket>(socketDescriptor, ConnectionStatus::CONNECTED, (br_object*)this);
   }
   if (!addToSocketList(socketDescriptor)) {
     // TODO: set error
@@ -267,6 +280,7 @@ bool TcpServer::addNewConnection(int socketDescriptor)
     return false;
   }
   startTimeoutTimer(socketDescriptor);
+  return true;
 }
 bool TcpServer::newIncomingData(int socketDescriptor)
 {
@@ -280,6 +294,7 @@ bool TcpServer::newIncomingData(int socketDescriptor)
   stopTimeoutTimer(socketDescriptor);
   connection->readFromSocket();
   startTimeoutTimer(socketDescriptor);
+  return true;
 }
 bool TcpServer::connectionClosed(int socketDescriptor)
 {
@@ -287,6 +302,7 @@ bool TcpServer::connectionClosed(int socketDescriptor)
   stopTimeoutTimer(socketDescriptor);
   // TODO: notify disconnection
   removeFromActiveConnections(socketDescriptor);
+  return true;
 }
 bool TcpServer::addToSocketList(int socketFd)
 {
@@ -300,6 +316,7 @@ bool TcpServer::addToSocketList(int socketFd)
   _socketList[firstIndex].events = POLLIN;
   _socketFdIndexMap[socketFd] = firstIndex;
   _socketListEmptyIndexSet.erase(firstIndex);
+  return true;
 }
 bool TcpServer::removeFromSocketList(int socketFd)
 {
@@ -311,8 +328,9 @@ bool TcpServer::removeFromSocketList(int socketFd)
   _socketList[element->second].fd = -1;
   _socketListEmptyIndexSet.insert(element->second);
   _socketFdIndexMap.erase(element);
+  return true;
 }
-bool TcpServer::addToActiveConnections(std::shared_ptr<TcpSocket> socket)
+bool TcpServer::addToActiveConnections(std::shared_ptr<TcpSocket> &socket)
 {
   if (_activeConnections.end() != _activeConnections.find(socket->socketDescriptor())) {
     // TODO: set error
@@ -377,4 +395,5 @@ bool TcpServer::stopTimeoutTimer(uint16_t timerId)
   int socketDescriptor = it->second;
   _timerIdSocketFdMap.erase(timerId);
   _socketFdTimerIdMap.erase(socketDescriptor);
+  return true;
 }

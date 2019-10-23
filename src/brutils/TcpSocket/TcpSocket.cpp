@@ -13,7 +13,7 @@
 
 using namespace brutils;
 
-#define DEFAULT_READ_BUFFER_SIZE 1024*1024
+#define DEFAULT_READ_BUFFER_SIZE (1024*1024)
 #define INCOMING_DATA_SIZE 1024
 
 TcpSocket::TcpSocket(br_object *parent) :
@@ -62,18 +62,16 @@ TcpSocket::TcpSocket(int socketDescriptor, ConnectionStatus status, uint64_t rea
     dataReady(parent),
     errorOccurred(parent),
     destroyed(parent),
+    _readBufferSize(readBufferSize),
     _socketD(socketDescriptor),
     _connectionStatus(status)
 {
-
   setReadBufferSize(readBufferSize);
 }
 TcpSocket::~TcpSocket()
 {
   if (ConnectionStatus::CONNECTED == connectionStatus()) {
-    if (0 == disconnect()) {
-      close();
-    }
+    disconnect();
   }
   destroyed.emit();
 }
@@ -129,7 +127,7 @@ uint16_t TcpSocket::peerPort()
       errorOccurred.emit(_lastError);
       return 0;
     }
-    return ntohs(peer.sin_port);
+    return ntohs(peer.sin_port); // NOLINT(hicpp-signed-bitwise)
   }
   _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
   _lastError.errorStr.clear();
@@ -180,7 +178,7 @@ bool TcpSocket::setSocketDescriptor(const int sd)
   errorOccurred.emit(_lastError);
   return false;
 }
-bool TcpSocket::connect(const std::string address, const uint16_t port)
+bool TcpSocket::connect(const std::string address, const uint16_t port) // NOLINT(performance-unnecessary-value-param)
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::NOT_CONNECTED != connectionStatus()) {
@@ -215,7 +213,6 @@ bool TcpSocket::connect(const std::string address, const uint16_t port)
   addr.sin_port = port;
   int res = ::connect(_socketD, (sockaddr *) &addr, sizeof(addr));
   if (0 != res) {
-    close();
     int errNo = errno;
     _lastError.errorCode = SYS_ERROR;
     _lastError.errorStr.clear();
@@ -241,7 +238,7 @@ bool TcpSocket::disconnect()
     return false;
   }
 
-  int res = -1;
+  int res;
   if (this->getThreadId() == std::this_thread::get_id()) {
     res = ::close(_socketD);
     if (0 != res) {
@@ -321,7 +318,7 @@ bool TcpSocket::readFromSocket()
       break;
     } else {
       // read incoming data
-      _dataBuffer.push_back(incomingData);
+      _dataBuffer.insert(_dataBuffer.end(), incomingData, incomingData+incomingDataSize);
       totalReceivedSize += incomingDataSize;
     }
   } while (incomingDataSize == sizeof(incomingData));

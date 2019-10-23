@@ -6,7 +6,7 @@
 #include <string>
 #include <mutex>
 
-#include "brutils/br_object.hpp"
+#include "brutils/br_object.h"
 
 namespace brutils {
 
@@ -41,7 +41,7 @@ class TcpSocket : public br_object
                      ConnectionStatus status,
                      uint64_t readBufferSize,
                      br_object *parent = nullptr);
-  ~TcpSocket();
+  ~TcpSocket() override;
 
  public: // signals:
   signal<> connected;

@@ -5,7 +5,7 @@
 #ifndef BRUTILS_INCLUDE_BRUTILS_TIMERS_COMBINED_TIMER_H_
 #define BRUTILS_INCLUDE_BRUTILS_TIMERS_COMBINED_TIMER_H_
 
-#include "brutils/br_object.hpp"
+#include "brutils/br_object.h"
 
 #include <map>
 #include <chrono>
@@ -17,8 +17,8 @@ namespace brutils {
 class combined_timer : br_object
 {
  public:
-  combined_timer(br_object *parent = nullptr);
-  ~combined_timer();
+  explicit combined_timer(br_object *parent = nullptr);
+  ~combined_timer() override;
 
   int16_t addTimer(uint64_t duration_ms, bool periodic = false);
   bool stopTimer(int16_t timerId);
