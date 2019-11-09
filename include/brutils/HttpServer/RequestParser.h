@@ -74,7 +74,7 @@ class RequestParser_v1x : public RequestParser
  protected:
   void newDataReceived_slot(std::vector<uint8_t> &data) override;
 
- private:
+ public:
   // root parse function
   bool parse();
   // first level parse functions

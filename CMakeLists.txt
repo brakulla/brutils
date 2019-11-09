@@ -19,7 +19,7 @@ if (CMAKE_BUILD_TYPE MATCHES Test)
 else ()
     include_directories(include)
     add_library(brutils STATIC
-            #        src/main.cpp
+            main.cpp
             include/brutils/HttpServer/RequestParser.h
             src/brutils/HttpServer/RequestParser.cpp
             include/brutils/TcpSocket/TcpSocket.h
@@ -37,6 +37,7 @@ else ()
             include/brutils/json_generator.h
             src/brutils/json_parser.cpp
             src/brutils/json_generator.cpp)
+    add_executable(brutilsTest main.cpp src/brutils/HttpServer/RequestParser.cpp include/brutils/HttpServer/RequestParser.h)
     set_target_properties(brutils PROPERTIES
             LINKER_LANGUAGE CXX
             VERSION ${PROJECT_VERSION}

@@ -18,9 +18,7 @@ RequestParser_v1x::RequestParser_v1x(br_object *parent) :
                }),
     _versionMap({
                     {{'H', 'T', 'T', 'P', '/', '1', '.', '0'}, HTTP_10},
-                    {{'H', 'T', 'T', 'P', '/', '1', '.', '1'}, HTTP_11},
-                    {{'H', 'T', 'T', 'P', '/', '2', '.', '0'}, HTTP_20},
-                    {{'H', 'T', 'T', 'P', '/', '3', '.', '0'}, HTTP_30}
+                    {{'H', 'T', 'T', 'P', '/', '1', '.', '1'}, HTTP_11}
                 }),
     _newLine({{'\r', '\n'}}),
     _emptySpace({' '})
@@ -154,7 +152,10 @@ bool RequestParser_v1x::parseHeader(std::vector<uint8_t>::const_iterator &pos,
     std::string key(pos, keyEndPos);
     pos = keyEndPos;
     std::advance(pos, 1); // advance ahead of ':'
-    std::string value(pos, lineEndPos);
+    auto valueStart = std::find_if(pos, lineEndPos, [] (uint8_t el) {
+      return el != ' ';
+    });
+    std::string value(valueStart, lineEndPos);
     pos = lineEndPos;
     std::advance(pos, 2); // advance ahead of "\r\n"
   }
@@ -209,7 +210,7 @@ bool RequestParser_v1x::parsePathAndQuery(std::vector<uint8_t>::const_iterator &
     if (!parsePath(pos, queryStartPos)) {
       return false;
     }
-    std::advance(queryStartPos, 1); // advance ahead of '?' char
+    std::advance(pos, 1); // advance ahead of '?' char
     if (!parseQuery(pos, uriEndPos)) {
       return false;
     }
@@ -231,8 +232,7 @@ bool RequestParser_v1x::parseVersion(std::vector<uint8_t>::const_iterator &pos,
     return false;
   }
   pos = end;
-
-  return version;
+  return true;
 }
 bool RequestParser_v1x::parsePath(std::vector<uint8_t>::const_iterator &pos,
                                          std::vector<uint8_t>::const_iterator &end)
