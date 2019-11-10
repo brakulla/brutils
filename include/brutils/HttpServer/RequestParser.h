@@ -33,9 +33,18 @@ enum HttpVersion {
   UNKNOWN_VERSION
 };
 
-class ParseError
+enum ParseError_e
 {
+  NO_ERROR = 0,
+  CANNOT_PARSE_REQUESTLINE_METHOD,
+  CANNOT_PARSE_REQUESTLINE_URI,
+  CANNOT_PARSE_REQUESTLINE_VERSION
+};
 
+struct ParseError
+{
+  ParseError_e errorCode;
+  std::string errorStr;
 };
 
 class RequestParser

@@ -111,19 +111,29 @@ bool RequestParser_v1x::parseRequestLine(std::vector<uint8_t>::const_iterator &p
 
   // read method
   if (!parseMethod(pos, lineEndPos)) {
-    // TODO: set error
+    ParseError error {
+      CANNOT_PARSE_REQUESTLINE_METHOD,
+      "Cannot parse method in request line"
+    };
+    errorOccured.emit(error);
     return false;
   }
 
   // read path and query
   if (!parsePathAndQuery(pos, lineEndPos)) {
-    // TODO: set error
+    ParseError error {
+      CANNOT_PARSE_REQUESTLINE_URI,
+      "Cannot parse uri in request line"
+    };
     return false;
   }
 
   // read http protocol version
   if (!parseVersion(pos, lineEndPos)) {
-    // TODO: set error
+    ParseError error {
+      CANNOT_PARSE_REQUESTLINE_VERSION,
+      "Cannot parse version in request line"
+    };
     return false;
   }
 
