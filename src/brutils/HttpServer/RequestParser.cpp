@@ -55,7 +55,7 @@ void RequestParser_v1x::newDataReceived_slot(std::vector<uint8_t> &data)
 bool RequestParser_v1x::parse()
 {
   if (!_requestInProduction) {
-    _requestInProduction = std::make_shared<HttpRequest>();
+    _requestInProduction = std::make_shared<HttpServer_private::HttpRequest_SettersEnabled>();
   }
 
   for (auto pos = _buffer.cbegin(), end = _buffer.cend(); pos != end;) {
@@ -168,6 +168,9 @@ bool RequestParser_v1x::parseHeader(std::vector<uint8_t>::const_iterator &pos,
     std::string value(valueStart, lineEndPos);
     pos = lineEndPos;
     std::advance(pos, 2); // advance ahead of "\r\n"
+    std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(
+        _requestInProduction
+        )->insertHeader(key, value);
   }
   // correct processing should be finished within while loop, so if flow reached here, it is an error
   return false;
@@ -181,8 +184,8 @@ bool RequestParser_v1x::parseBody(std::vector<uint8_t>::const_iterator &pos,
   }
   std::vector<uint8_t> body(pos, end);
   pos = end;
-
-  // TODO: use body parser here or somewhere else after this point
+  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setBodyContent(body);
+  // TODO: use body parser here or somewhere else after this point and set meaningful body of request
   return true;
 }
 bool RequestParser_v1x::parseMethod(std::vector<uint8_t>::const_iterator &pos,
@@ -192,7 +195,7 @@ bool RequestParser_v1x::parseMethod(std::vector<uint8_t>::const_iterator &pos,
   if (methodEndPos == end) { // we couldn't find empty space, something wrong
     return false;
   }
-  HttpMethod method = UNKNOWN_METHOD;
+  HttpRequestMethod method = UNKNOWN_METHOD;
   for (auto &el: _methodMap) {
     if (std::equal(pos, methodEndPos, el.first.cbegin(), el.first.cend())) {
       method = el.second;
@@ -204,7 +207,7 @@ bool RequestParser_v1x::parseMethod(std::vector<uint8_t>::const_iterator &pos,
   }
   pos = methodEndPos;
   std::advance(pos, 1); // advance ahead of empty space
-  // TODO: set request method
+  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setMethod(method);
   return true;
 }
 bool RequestParser_v1x::parsePathAndQuery(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end)
@@ -231,7 +234,7 @@ bool RequestParser_v1x::parseVersion(std::vector<uint8_t>::const_iterator &pos,
                                      std::vector<uint8_t>::const_iterator &end)
 {
   // read http version, this time, we read until the end of the line
-  HttpVersion version = UNKNOWN_VERSION;
+  HttpConnectionVersion version = UNKNOWN_VERSION;
   for (auto &el: _versionMap) {
     if (std::equal(pos, end, el.first.cbegin(), el.first.cend())) {
       version = el.second;
@@ -242,6 +245,7 @@ bool RequestParser_v1x::parseVersion(std::vector<uint8_t>::const_iterator &pos,
     return false;
   }
   pos = end;
+  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setVersion(version);
   return true;
 }
 bool RequestParser_v1x::parsePath(std::vector<uint8_t>::const_iterator &pos,
@@ -251,12 +255,12 @@ bool RequestParser_v1x::parsePath(std::vector<uint8_t>::const_iterator &pos,
     return false;
   }
   std::string path(pos, end);
-  // TODO: set request path
   pos = end;
+  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setPath(path);
   return true;
 }
 bool RequestParser_v1x::parseQuery(std::vector<uint8_t>::const_iterator &pos,
-                                                                 std::vector<uint8_t>::const_iterator &end)
+                                   std::vector<uint8_t>::const_iterator &end)
 {
   std::map<std::string, std::string> query;
   while(0 < std::distance(pos, end)) {
@@ -272,6 +276,6 @@ bool RequestParser_v1x::parseQuery(std::vector<uint8_t>::const_iterator &pos,
     pos = pairEndPos;
     std::advance(pos, 1); // advance ahead of '&' or '='
   }
-  // TODO; set request query
+  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setQuery(query);
   return true;
 }

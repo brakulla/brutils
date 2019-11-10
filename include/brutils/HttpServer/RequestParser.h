@@ -1,37 +1,12 @@
 #ifndef BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_REQUESTPARSER_H_
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_REQUESTPARSER_H_
 
-#include <brutils/br_object.h>
-#include <string_view>
 #include <memory>
+#include <brutils/br_object.h>
+#include "brutils/HttpServer/HttpRequest.h"
 
 namespace brutils
 {
-
-class HttpRequest {
-
-};
-
-enum HttpMethod {
-  GET,
-  HEAD,
-  POST,
-  PUT,
-  PATCH,
-  DELETE,
-  CONNECT,
-  OPTIONS,
-  TRACE,
-  UNKNOWN_METHOD
-};
-
-enum HttpVersion {
-  HTTP_10,
-  HTTP_11,
-  HTTP_20,
-  HTTP_30,
-  UNKNOWN_VERSION
-};
 
 enum ParseError_e
 {
@@ -101,8 +76,8 @@ class RequestParser_v1x : public RequestParser
  private:
   std::vector<uint8_t > _buffer;
   std::shared_ptr<HttpRequest> _requestInProduction;
-  const std::map<std::vector<uint8_t>, HttpMethod> _methodMap;
-  const std::map<std::vector<uint8_t>, HttpVersion> _versionMap;
+  const std::map<std::vector<uint8_t>, HttpRequestMethod> _methodMap;
+  const std::map<std::vector<uint8_t>, HttpConnectionVersion> _versionMap;
   const std::vector<uint8_t> _newLine;
   const std::vector<uint8_t> _emptySpace;
 
@@ -114,16 +89,6 @@ class RequestParser_v1x : public RequestParser
     ERROR
   } _parsingStatus;
 };
-
-// G -> GET
-// H -> HEAD
-// P -> POST
-//      PUT
-//      PATCH
-// D -> DELETE
-// C -> CONNECT
-// O -> OPTIONS
-// T -> TRACE
 
 }
 
