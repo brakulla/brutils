@@ -25,10 +25,6 @@ RequestParser_v1x::RequestParser_v1x(br_object *parent) :
 {
 
 }
-RequestParser_v1x::~RequestParser_v1x()
-{
-
-}
 std::shared_ptr<HttpRequest> RequestParser_v1x::newIncomingData(std::vector<uint8_t> &data)
 {
   _buffer.insert(_buffer.end(), data.begin(), data.end());
@@ -71,19 +67,21 @@ bool RequestParser_v1x::parse()
       if (!parseHeader(pos, end)) {
         _parsingStatus = ERROR;
       } else {
-//        if (_requestInProduction.header("content-size")) {
-//          _parsingStatus = BODY;
-//        } else {
+        std::string contentSize = _requestInProduction->header("content-size");
+        if (contentSize.empty()) {
           _parsingStatus = FINISHED;
-//        }
+        } else {
+          _parsingStatus = BODY;
+        }
       }
     }
     if (BODY == _parsingStatus) {
-//      if (!parseBody(pos, end, _requestInProduction.header("content-size"))) {
-//        _parsingStatus = ERROR;
-//      } else {
+      uint64_t contentSize = std::stoll(_requestInProduction->header("content-size"));
+      if (!parseBody(pos, end, contentSize)) {
+        _parsingStatus = ERROR;
+      } else {
         _parsingStatus = FINISHED;
-//      }
+      }
     }
 
     if (FINISHED == _parsingStatus) {
@@ -184,7 +182,7 @@ bool RequestParser_v1x::parseBody(std::vector<uint8_t>::const_iterator &pos,
   }
   std::vector<uint8_t> body(pos, end);
   pos = end;
-  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setBodyContent(body);
+  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setRawBody(body);
   // TODO: use body parser here or somewhere else after this point and set meaningful body of request
   return true;
 }

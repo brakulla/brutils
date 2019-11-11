@@ -36,16 +36,30 @@ enum HttpConnectionVersion
 class HttpRequest : public br_object
 {
  public:
-  HttpRequest(br_object *parent = nullptr);
-  ~HttpRequest();
+  explicit HttpRequest(br_object *parent = nullptr);
+  ~HttpRequest() override = default;
+
+ public:
+  [[nodiscard]] HttpRequestMethod method() const;
+  [[nodiscard]] HttpConnectionVersion connectionVersion() const;
+  [[nodiscard]] std::string path() const;
+  [[nodiscard]] std::string query(const std::string &key) const;
+  [[nodiscard]] std::string query(std::string &&key) const;
+  [[nodiscard]] std::map<std::string, std::string> queryMap() const;
+  [[nodiscard]] std::vector<uint8_t> rawBody() const;
+  [[nodiscard]] std::string header(const std::string &key) const;
+  [[nodiscard]] std::string header(std::string &&key) const;
+  [[nodiscard]] std::map<std::string, std::string> headerMap() const;
 
  protected:
   HttpRequestMethod _method;
   HttpConnectionVersion _version;
   std::string _path;
   std::map<std::string, std::string> _query;
-  std::vector<uint8_t> _bodyContent; // TODO: implement different meaningful versions of body based on content-type
+  std::vector<uint8_t> _rawBody; // TODO: implement different meaningful versions of body based on content-type
   std::map<std::string, std::string> _headers;
+
+  [[nodiscard]] std::string toLower(const std::string &str) const;
 
 };
 
@@ -56,39 +70,15 @@ class HttpRequest_SettersEnabled : public HttpRequest
  public:
   explicit HttpRequest_SettersEnabled(br_object *parent = nullptr) :
       HttpRequest(parent) {}
-  ~HttpRequest_SettersEnabled() = default;
+  ~HttpRequest_SettersEnabled() override = default;
 
  public:
-  void setMethod(HttpRequestMethod method)
-  {
-    _method = method;
-  }
-  void setVersion(HttpConnectionVersion version)
-  {
-    _version = version;
-  }
-  void setPath(const std::string &path)
-  {
-    _path = path;
-  }
-  void setQuery(const std::map<std::string, std::string> &query)
-  {
-    _query = query;
-  }
-  void setBodyContent(const std::vector<uint8_t> &bodyContent)
-  {
-    _bodyContent = bodyContent;
-  }
-  void insertHeader(const std::string &key, const std::string &value)
-  {
-    std::string myKey(key);
-    std::transform(myKey.begin(), myKey.end(), myKey.begin(),
-                   [](unsigned char c){ return std::tolower(c); });
-    _headers[myKey] = value;
-    std::transform(_headers[myKey].begin(), _headers[myKey].end(), _headers[myKey].begin(),
-                   [](unsigned char c){ return std::tolower(c); });
-  }
-
+  void setMethod(HttpRequestMethod method);
+  void setVersion(HttpConnectionVersion version);
+  void setPath(const std::string &path);
+  void setQuery(const std::map<std::string, std::string> &query);
+  void setRawBody(const std::vector<uint8_t> &rawBody);
+  void insertHeader(const std::string &key, const std::string &value);
 };
 }
 

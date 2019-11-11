@@ -50,7 +50,7 @@ class RequestParser_v1x : public RequestParser
 {
  public:
   explicit RequestParser_v1x(br_object *parent = nullptr);
-  ~RequestParser_v1x() override;
+  ~RequestParser_v1x() override = default;
 
  public:
   std::shared_ptr<HttpRequest> newIncomingData(std::vector<uint8_t> &data) override;
