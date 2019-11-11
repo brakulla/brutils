@@ -44,12 +44,19 @@ void HttpConnection::parseErrorOccured_slot(brutils::ParseError error)
 }
 void HttpConnection::newRequestAvailable_slot(std::shared_ptr<HttpRequest> request)
 {
-  // if request version is 1.0, do something with it
+  if (HTTP_10 == request->connectionVersion()) {
+    // TODO: return error message
+  }
   // if upgrade to http 2 is requested in request object, put that logic here
+
   // create an http response object bind with request and start monitoring it,
   // it's this class' job to provide response mechanism
 }
 void HttpConnection::responseReady_slot()
 {
 
+}
+std::shared_ptr<HttpResponse> HttpConnection::createResponse(std::shared_ptr<HttpRequest> request)
+{
+  auto response = std::make_shared<HttpResponse>();
 }

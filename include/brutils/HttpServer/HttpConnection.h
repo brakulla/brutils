@@ -40,6 +40,8 @@ class HttpConnection : public br_object
   void newRequestAvailable_slot(std::shared_ptr<HttpRequest> request);
   void responseReady_slot();
 
+  std::shared_ptr<HttpResponse> createResponse(std::shared_ptr<HttpRequest> request);
+
  private:
   std::unique_ptr<RequestParser> _parser;
   std::unique_ptr<HttpConnection> _connection;

@@ -4,6 +4,9 @@
 
 #include "brutils/HttpServer/HttpRequest.h"
 
+#include "brutils/json_parser.h"
+#include "brutils/string_utils.h"
+
 using namespace brutils;
 
 HttpRequest::HttpRequest(br_object *parent) :
@@ -53,14 +56,14 @@ std::map<std::string, std::string> HttpRequest::headerMap() const
 {
   return _headers;
 }
-std::string HttpRequest::toLower(const std::string &str) const
+variant HttpRequest::bodyJson() const
 {
-  std::string lower;
-  lower.reserve(str.size());
-  std::transform(str.begin(), str.end(), lower.begin(), [] (unsigned char c) {
-    return std::tolower(c);
-  });
-  return lower;
+  std::string_view body_view(reinterpret_cast<const char *>(_rawBody.data()), _rawBody.size());
+  return json_parser::parse(body_view);
+}
+variant HttpRequest::bodyXml() const
+{
+  return brutils::variant();
 }
 void HttpServer_private::HttpRequest_SettersEnabled::setMethod(HttpRequestMethod method)
 {

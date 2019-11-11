@@ -6,6 +6,7 @@
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPREQUEST_H_
 
 #include "brutils/br_object.h"
+#include "brutils/variant.h"
 
 namespace brutils
 {
@@ -50,6 +51,8 @@ class HttpRequest : public br_object
   [[nodiscard]] std::string header(const std::string &key) const;
   [[nodiscard]] std::string header(std::string &&key) const;
   [[nodiscard]] std::map<std::string, std::string> headerMap() const;
+  [[nodiscard]] variant bodyJson() const;
+  [[nodiscard]] variant bodyXml() const;
 
  protected:
   HttpRequestMethod _method;
@@ -58,8 +61,6 @@ class HttpRequest : public br_object
   std::map<std::string, std::string> _query;
   std::vector<uint8_t> _rawBody; // TODO: implement different meaningful versions of body based on content-type
   std::map<std::string, std::string> _headers;
-
-  [[nodiscard]] std::string toLower(const std::string &str) const;
 
 };
 
