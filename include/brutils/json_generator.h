@@ -16,23 +16,20 @@ namespace brutils
 class json_generator
 {
 public:
-    json_generator(bool compact = false);
-    ~json_generator() = default;
-
-    std::string generate(variant &json);
+    static std::string generate(const variant &json, bool compact = false);
 
 private:
-    std::string genObject(variant_map object, int depth = 0);
-    std::string genArray(variant_list list, int depth = 0);
-    std::string genValue(variant value, int depth = 0);
+    static std::string genObject(const variant_map &object, bool compact, int depth = 0);
+    static std::string genArray(const variant_list &list, bool compact, int depth = 0);
+    static std::string genValue(const variant &value, bool compact, int depth = 0);
 
-    std::string genString(variant string);
-    std::string genNumber(variant number);
-    std::string genLiteral(variant literal);
+    static std::string genString(const variant &string);
+    static std::string genNumber(const variant &number);
+    static std::string genLiteral(const variant &literal);
 
-    std::string getWhiteSpace(int depth);
-    std::string genLineFeed();
-    std::string genTab(int tabCount = 0);
+    static std::string getWhiteSpace(bool compact, int depth);
+    static std::string genLineFeed();
+    static std::string genTab(int tabCount = 0);
 
 private:
     bool _compact;

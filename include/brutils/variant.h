@@ -25,39 +25,39 @@ class variant
 {
 public:
     variant()
-        : _valid(false)
+        : _valid(false), _type()
     {}
-    variant(std::nullptr_t aNullptr)
+    explicit variant(std::nullptr_t aNullptr)
     {
-        _valid = true;
+        setValue(aNullptr);
     }
-    variant(bool val)
+    explicit variant(bool val)
     {
         setValue(val);
     }
-    variant(int val)
+    explicit variant(int val)
     {
         setValue(val);
     }
-    variant(float val)
+    explicit variant(float val)
     {
         setValue(val);
     }
-    variant(double val)
+    explicit variant(double val)
     {
         setValue(val);
     }
-    variant(std::string val)
+    explicit variant(std::string val)
     {
-        setValue(val);
+        setValue(std::move(val));
     }
-    variant(variant_list val)
+    explicit variant(variant_list val)
     {
-        setValue(val);
+        setValue(std::move(val));
     }
-    variant(variant_map val)
+    explicit variant(variant_map val)
     {
-        setValue(val);
+        setValue(std::move(val));
     }
     ~variant() = default;
 
@@ -74,109 +74,109 @@ public:
         return _type;
     }
 
-    bool isValid()
+    [[nodiscard]] bool isValid() const
     {
         return _valid;
     }
 
-    bool isNull()
+    [[nodiscard]] bool isNull() const
     {
         return !_value.has_value();
     }
 
-    bool isBool()
+    [[nodiscard]] bool isBool() const
     {
         if (!isNull())
             return _value.type() == typeid(bool);
         return false;
     }
 
-    bool isInt()
+    [[nodiscard]] bool isInt() const
     {
         if (!isNull())
             return _value.type() == typeid(int);
         return false;
     }
 
-    bool isFloat()
+    [[nodiscard]] bool isFloat() const
     {
         if (!isNull())
             return _value.type() == typeid(float);
         return false;
     }
 
-    bool isDouble()
+    [[nodiscard]] bool isDouble() const
     {
         if (!isNull())
             return _value.type() == typeid(double);
         return false;
     }
 
-    bool isString()
+    [[nodiscard]] bool isString() const
     {
         if (!isNull())
             return _value.type() == typeid(std::string);
         return false;
     }
 
-    bool isMap()
+    [[nodiscard]] bool isMap() const
     {
         if (!isNull())
             return _value.type() == typeid(variant_map);
         return false;
     }
 
-    bool isList()
+    [[nodiscard]] bool isList() const
     {
         if (!isNull())
             return _value.type() == typeid(variant_list);
         return false;
     }
 
-    bool isValue()
+    [[nodiscard]] bool isValue() const
     {
         if (!isNull())
             return _value.type() != typeid(variant_map) && _value.type() != typeid(variant_list);
         return false;
     }
 
-    bool toBool()
+    [[nodiscard]] bool toBool() const
     {
         return value<bool>();
     }
 
-    int toInt()
+    [[nodiscard]] int toInt() const
     {
         return value<int>();
     }
 
-    float toFloat()
+    [[nodiscard]] float toFloat() const
     {
         return value<float>();
     }
 
-    double toDouble()
+    [[nodiscard]] double toDouble() const
     {
         return value<double>();
     }
 
-    std::string toString()
+    [[nodiscard]] std::string toString() const
     {
         return value<std::string>();
     }
 
-    variant_list toList()
+    [[nodiscard]] variant_list toList() const
     {
         return value<variant_list>();
     }
 
-    variant_map toMap()
+    [[nodiscard]] variant_map toMap() const
     {
         return value<variant_map>();
     }
 
     template<class T>
-    T value()
+    [[nodiscard]] T value() const
     {
         if (typeid(T) == *_type)
             return std::any_cast<T>(_value);
