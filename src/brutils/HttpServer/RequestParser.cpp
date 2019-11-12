@@ -51,7 +51,7 @@ void RequestParser_v1x::newDataReceived_slot(std::vector<uint8_t> &data)
 bool RequestParser_v1x::parse()
 {
   if (!_requestInProduction) {
-    _requestInProduction = std::make_shared<HttpServer_private::HttpRequest_SettersEnabled>();
+    _requestInProduction = std::make_shared<HttpServer_private::HttpRequest_private>();
   }
 
   for (auto pos = _buffer.cbegin(), end = _buffer.cend(); pos != end;) {
@@ -166,7 +166,7 @@ bool RequestParser_v1x::parseHeader(std::vector<uint8_t>::const_iterator &pos,
     std::string value(valueStart, lineEndPos);
     pos = lineEndPos;
     std::advance(pos, 2); // advance ahead of "\r\n"
-    std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(
+    std::static_pointer_cast<HttpServer_private::HttpRequest_private>(
         _requestInProduction
         )->insertHeader(key, value);
   }
@@ -182,7 +182,7 @@ bool RequestParser_v1x::parseBody(std::vector<uint8_t>::const_iterator &pos,
   }
   std::vector<uint8_t> body(pos, end);
   pos = end;
-  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setRawBody(body);
+  std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setRawBody(body);
   // TODO: use body parser here or somewhere else after this point and set meaningful body of request
   return true;
 }
@@ -205,7 +205,7 @@ bool RequestParser_v1x::parseMethod(std::vector<uint8_t>::const_iterator &pos,
   }
   pos = methodEndPos;
   std::advance(pos, 1); // advance ahead of empty space
-  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setMethod(method);
+  std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setMethod(method);
   return true;
 }
 bool RequestParser_v1x::parsePathAndQuery(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end)
@@ -243,7 +243,7 @@ bool RequestParser_v1x::parseVersion(std::vector<uint8_t>::const_iterator &pos,
     return false;
   }
   pos = end;
-  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setVersion(version);
+  std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setVersion(version);
   return true;
 }
 bool RequestParser_v1x::parsePath(std::vector<uint8_t>::const_iterator &pos,
@@ -254,7 +254,7 @@ bool RequestParser_v1x::parsePath(std::vector<uint8_t>::const_iterator &pos,
   }
   std::string path(pos, end);
   pos = end;
-  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setPath(path);
+  std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setPath(path);
   return true;
 }
 bool RequestParser_v1x::parseQuery(std::vector<uint8_t>::const_iterator &pos,
@@ -274,6 +274,6 @@ bool RequestParser_v1x::parseQuery(std::vector<uint8_t>::const_iterator &pos,
     pos = pairEndPos;
     std::advance(pos, 1); // advance ahead of '&' or '='
   }
-  std::static_pointer_cast<HttpServer_private::HttpRequest_SettersEnabled>(_requestInProduction)->setQuery(query);
+  std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setQuery(query);
   return true;
 }

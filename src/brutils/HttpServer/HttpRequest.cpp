@@ -65,27 +65,27 @@ variant HttpRequest::bodyXml() const
 {
   return brutils::variant();
 }
-void HttpServer_private::HttpRequest_SettersEnabled::setMethod(HttpRequestMethod method)
+void HttpServer_private::HttpRequest_private::setMethod(HttpRequestMethod method)
 {
   _method = method;
 }
-void HttpServer_private::HttpRequest_SettersEnabled::setVersion(HttpConnectionVersion version)
+void HttpServer_private::HttpRequest_private::setVersion(HttpConnectionVersion version)
 {
   _version = version;
 }
-void HttpServer_private::HttpRequest_SettersEnabled::setPath(const std::string &path)
+void HttpServer_private::HttpRequest_private::setPath(const std::string &path)
 {
   _path = path;
 }
-void HttpServer_private::HttpRequest_SettersEnabled::setQuery(const std::map<std::string, std::string> &query)
+void HttpServer_private::HttpRequest_private::setQuery(const std::map<std::string, std::string> &query)
 {
   _query = query;
 }
-void HttpServer_private::HttpRequest_SettersEnabled::setRawBody(const std::vector<uint8_t> &rawBody)
+void HttpServer_private::HttpRequest_private::setRawBody(const std::vector<uint8_t> &rawBody)
 {
   _rawBody = rawBody;
 }
-void HttpServer_private::HttpRequest_SettersEnabled::insertHeader(const std::string &key, const std::string &value)
+void HttpServer_private::HttpRequest_private::insertHeader(const std::string &key, const std::string &value)
 {
   _headers.insert(std::make_pair(toLower(key), toLower(value)));
 }

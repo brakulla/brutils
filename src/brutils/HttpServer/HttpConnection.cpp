@@ -3,17 +3,24 @@
 //
 
 #include "brutils/HttpServer/HttpConnection.h"
+#include "brutils/time_utils.h"
 
 using namespace brutils;
 
-HttpConnection::HttpConnection(std::shared_ptr<TcpSocket> tcpSocket, br_object *parent) :
+#define HTTP2_UPGRADE_HEADER_VALUE "h2c"
+
+HttpConnection::HttpConnection(bool upgradeProtocolInUnsecureConnection,
+                               std::shared_ptr<TcpSocket> tcpSocket,
+                               br_object *parent) :
     br_object(parent),
     newRequestReady(parent),
     tcpErrorOccured(parent),
     tcpSocketDisconnected(parent),
     parseErrorOccured(parent),
     newRequestAvailable(parent),
-    responseReady(parent)
+    responseReadyToSend(parent),
+    _upgradeProtocolInUnsecureConnection(upgradeProtocolInUnsecureConnection),
+    _tcpSocket(tcpSocket)
 {
   tcpErrorOccured.setSlotFunction(
       std::bind(&HttpConnection::tcpErrorOccured_slot, this, std::placeholders::_1));
@@ -23,12 +30,14 @@ HttpConnection::HttpConnection(std::shared_ptr<TcpSocket> tcpSocket, br_object *
       std::bind(&HttpConnection::parseErrorOccured_slot, this, std::placeholders::_1));
   newRequestAvailable.setSlotFunction(
       std::bind(&HttpConnection::newRequestAvailable_slot, this, std::placeholders::_1));
-  responseReady.setSlotFunction(
-      std::bind(&HttpConnection::responseReady_slot, this));
+  responseReadyToSend.setSlotFunction(
+      std::bind(&HttpConnection::responseReady_slot, this, std::placeholders::_1));
 }
 HttpConnection::~HttpConnection()
 {
-
+  if (_tcpSocket) {
+    _tcpSocket->disconnect();
+  }
 }
 void HttpConnection::tcpErrorOccured_slot(brutils::TcpError error)
 {
@@ -44,19 +53,28 @@ void HttpConnection::parseErrorOccured_slot(brutils::ParseError error)
 }
 void HttpConnection::newRequestAvailable_slot(std::shared_ptr<HttpRequest> request)
 {
-  if (HTTP_10 == request->connectionVersion()) {
-    // TODO: return error message
+  auto response = createResponse(request);
+  if (HTTP_11 != request->connectionVersion()) {
+    response->status(HTTP_STATUS_VERSION_NOT_SUPPORTED);
+    response->send();
+    return;
   }
-  // if upgrade to http 2 is requested in request object, put that logic here
-
-  // create an http response object bind with request and start monitoring it,
+  // TODO: if upgrade to http 2 is requested in request object, put that logic here
   // it's this class' job to provide response mechanism
+  newRequestReady.emit(request, response); // this is the connection to the outer space
 }
-void HttpConnection::responseReady_slot()
+void HttpConnection::responseReady_slot(std::vector<uint8_t> data)
 {
-
+  _tcpSocket->write(data);
 }
 std::shared_ptr<HttpResponse> HttpConnection::createResponse(std::shared_ptr<HttpRequest> request)
 {
-  auto response = std::make_shared<HttpResponse>();
+  auto response = std::make_shared<HttpServer_private::HttpResponse_private>(this);
+  response->readyToWrite.connect(responseReadyToSend);
+
+  response->header("date", getLocaltimeFormatted("%a, %d %m %Y %T %Z"));
+  response->header("server", "brutils/cervpp");
+
+  // std::shared_ptr<HttpServer_private::HttpResponse_private> will be coverted to correct return value automatically
+  return response;
 }

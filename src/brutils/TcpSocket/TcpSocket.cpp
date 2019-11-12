@@ -329,7 +329,7 @@ bool TcpSocket::readFromSocket()
   }
   return true;
 }
-bool TcpSocket::write(const std::string &input)
+bool TcpSocket::write(const std::vector<uint8_t> &input)
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::CONNECTED != connectionStatus()) {
@@ -340,7 +340,7 @@ bool TcpSocket::write(const std::string &input)
     return false;
   }
 
-  int res = ::send(_socketD, input.c_str(), input.size(), 0);
+  int res = ::send(_socketD, input.data(), input.size(), 0);
   if (0 != res) {
     int errNo = errno;
     _lastError.errorCode = SYS_ERROR;

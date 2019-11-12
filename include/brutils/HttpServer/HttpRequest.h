@@ -66,12 +66,12 @@ class HttpRequest : public br_object
 
 namespace HttpServer_private
 {
-class HttpRequest_SettersEnabled : public HttpRequest
+class HttpRequest_private : public HttpRequest
 {
  public:
-  explicit HttpRequest_SettersEnabled(br_object *parent = nullptr) :
+  explicit HttpRequest_private(br_object *parent = nullptr) :
       HttpRequest(parent) {}
-  ~HttpRequest_SettersEnabled() override = default;
+  ~HttpRequest_private() override = default;
 
  public:
   void setMethod(HttpRequestMethod method);

@@ -37,6 +37,7 @@ else ()
             include/brutils/timers/timer.h
             include/brutils/queue_pc.h
             include/brutils/string_utils.h
+            include/brutils/time_utils.h
             include/brutils/br_object.h
             include/brutils/variant.h
             include/brutils/json_parser.h

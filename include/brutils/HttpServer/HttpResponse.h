@@ -31,6 +31,7 @@ enum HttpResponseStatus {
   HTTP_STATUS_NOT_MODIFIED = 304,
   HTTP_STATUS_USE_PROXY = 305,
   HTTP_STATUS_TEMPORARY_REDIRECT = 307,
+  HTTP_STATUS_PERMANENT_REDIRECT = 308,
   HTTP_STATUS_BAD_REQUEST = 400,
   HTTP_STATUS_UNAUTHORIZED = 401,
   HTTP_STATUS_PAYMENT_REQUIRED = 402,
@@ -49,13 +50,20 @@ enum HttpResponseStatus {
   HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE = 415,
   HTTP_STATUS_RANGE_NOT_SATISFIABLE = 416,
   HTTP_STATUS_EXPECTATION_FAILED = 417,
+  HTTP_STATUS_IM_A_TEAPOT = 418,
+  HTTP_STATUS_UNPROCESSABLE_ENTITY = 422,
+  HTTP_STATUS_TOO_EARLY = 425,
   HTTP_STATUS_UPGRADE_REQUIRED = 426,
+  HTTP_STATUS_PRECONDITION_REQUIRED = 428,
+  HTTP_STATUS_TOO_MANY_REQUESTS = 431,
+  HTTP_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS = 451,
   HTTP_STATUS_INTERNAL_SERVER_ERROR = 500,
   HTTP_STATUS_NOT_IMPLEMENTED = 501,
   HTTP_STATUS_BAD_GATEWAY = 502,
   HTTP_STATUS_SERVICE_UNAVAILABLE = 503,
   HTTP_STATUS_GATEWAY_TIMEOUT = 504,
-  HTTP_STATUS_VERSION_NOT_SUPPORTED = 505
+  HTTP_STATUS_VERSION_NOT_SUPPORTED = 505,
+  HTTP_STATUS_NETWORK_AUTHENTICATION_REQUIRED = 511
 };
 
 class HttpResponse : public br_object
@@ -63,9 +71,6 @@ class HttpResponse : public br_object
  public:
   explicit HttpResponse(br_object *parent = nullptr);
   ~HttpResponse() override = default;
-
- private:
-  signal<std::vector<uint8_t>> readyToWrite;
 
  public:
   void header(const std::string &key, const std::string &value);
@@ -99,19 +104,37 @@ class HttpResponse : public br_object
   void sendFile(const std::filesystem::path &filePath);
   void sendFile(std::filesystem::path &&filePath);
 
- private:
+ protected:
   HttpConnectionVersion _version;
   HttpResponseStatus _status;
   std::map<HttpResponseStatus, std::vector<uint8_t>> _statusMessageMap;
   std::map<HttpConnectionVersion, std::vector<uint8_t>> _versionMap;
   std::map<std::string, std::string> _headerMap;
   std::vector<uint8_t> _newLine;
-  std::vector<uint8_t> _headerSeparater;
+  std::vector<uint8_t> _headerSeparator;
 
   std::vector<uint8_t> convertHttpResponseStatusToVector(HttpResponseStatus status);
   void sendResponse(const std::vector<uint8_t> &responseData);
   void sendResponse(std::vector<uint8_t> &&responseData);
+
+ protected:
+  bool _privateT;
 };
+
+namespace HttpServer_private {
+class HttpResponse_private : public HttpResponse
+{
+ public:
+  explicit HttpResponse_private(br_object *parent) :
+      HttpResponse(parent),
+      readyToWrite(parent)
+  {
+    _privateT = true;
+  }
+
+  signal<std::vector<uint8_t>> readyToWrite;
+};
+}
 
 }
 

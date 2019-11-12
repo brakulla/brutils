@@ -68,7 +68,7 @@ class TcpSocket : public br_object
   bool disconnect();
 
   std::vector<uint8_t> read();
-  bool write(const std::string &input);
+  bool write(const std::vector<uint8_t> &input);
   bool readFromSocket();
 
  private:

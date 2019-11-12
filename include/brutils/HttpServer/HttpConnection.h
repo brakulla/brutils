@@ -8,43 +8,44 @@
 #include "brutils/br_object.h"
 #include "brutils/TcpSocket/TcpSocket.h"
 #include "brutils/HttpServer/RequestParser.h"
+#include "brutils/HttpServer/HttpResponse.h"
 
 namespace brutils
 {
 
-class HttpResponse
-{
-
-};
-
 class HttpConnection : public br_object
 {
  public:
-  HttpConnection(std::shared_ptr<TcpSocket> tcpSocket, br_object *parent = nullptr);
-  ~HttpConnection();
+  explicit HttpConnection(bool upgradeProtocolInUnsecureConnection,
+                          std::shared_ptr<TcpSocket> tcpSocket,
+                          br_object *parent = nullptr);
+  ~HttpConnection() override;
 
  public: // signals
-  signal<std::shared_ptr<HttpRequest>> newRequestReady;
+  signal<std::shared_ptr<HttpRequest>, std::shared_ptr<HttpResponse>> newRequestReady;
 
  private: // private slots
   slot<TcpError> tcpErrorOccured;
   slot<> tcpSocketDisconnected;
   slot<ParseError> parseErrorOccured;
   slot<std::shared_ptr<HttpRequest>> newRequestAvailable;
-  slot<> responseReady;
+  slot<std::vector<uint8_t>> responseReadyToSend;
 
  private:
   void tcpErrorOccured_slot(TcpError error);
   void tcpSocketDisconnected_slot();
   void parseErrorOccured_slot(ParseError error);
   void newRequestAvailable_slot(std::shared_ptr<HttpRequest> request);
-  void responseReady_slot();
+  void responseReady_slot(std::vector<uint8_t> data);
 
   std::shared_ptr<HttpResponse> createResponse(std::shared_ptr<HttpRequest> request);
 
+ private: // configuration
+  bool _upgradeProtocolInUnsecureConnection;
+
  private:
   std::unique_ptr<RequestParser> _parser;
-  std::unique_ptr<HttpConnection> _connection;
+  std::shared_ptr<TcpSocket> _tcpSocket;
 
 };
 
