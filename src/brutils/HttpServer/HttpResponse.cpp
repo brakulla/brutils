@@ -266,7 +266,9 @@ void HttpResponse::sendResponse(std::vector<uint8_t> &&responseData)
   if (!responseData.empty()) {
     response.insert(response.end(), responseData.begin(), responseData.end());
   }
-  readyToWrite.emit(response);
+  if (_privateT) {
+    ((HttpServer_private::HttpResponse_private*)this)->readyToWrite.emit(response);
+  }
 }
 std::vector<uint8_t> HttpResponse::convertHttpResponseStatusToVector(HttpResponseStatus status)
 {

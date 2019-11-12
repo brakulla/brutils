@@ -60,15 +60,17 @@ static std::basic_string<CharT> toLower(const std::basic_string<CharT> &input)
   std::transform(input.begin(), input.end(), lower.begin(), [](CharT c) {
     return std::tolower(c);
   });
+  return lower;
 }
 template<class CharT>
 static std::basic_string<CharT> toUpper(const std::basic_string<CharT> &input)
 {
-  std::basic_string<CharT> lower;
-  lower.reserve(input.size());
-  std::transform(input.begin(), input.end(), lower.begin(), [](CharT c) {
+  std::basic_string<CharT> upper;
+  upper.reserve(input.size());
+  std::transform(input.begin(), input.end(), upper.begin(), [](CharT c) {
     return std::toupper(c);
   });
+  return upper;
 }
 }
 

@@ -94,7 +94,7 @@ std::string TcpSocket::peerAddress()
     int res = getpeername(_socketD, (sockaddr *) &peer, &peerLen);
     if (0 != res) {
       int errNo = errno;
-      _lastError.errorCode = SYS_ERROR;
+      _lastError.errorCode = TCP_ERROR_SYS_ERROR;
       _lastError.errorStr.clear();
       _lastError.errorStr.append(std::to_string(errNo));
       _lastError.errorStr.append(" - ");
@@ -104,7 +104,7 @@ std::string TcpSocket::peerAddress()
     }
     return inet_ntoa(peer.sin_addr);
   }
-  _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+  _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
   _lastError.errorStr.clear();
   _lastError.errorStr = "Peer address is not available in not connected state";
   errorOccurred.emit(_lastError);
@@ -119,7 +119,7 @@ uint16_t TcpSocket::peerPort()
     int res = getpeername(_socketD, (sockaddr *) &peer, &peerLen);
     if (0 != res) {
       int errNo = errno;
-      _lastError.errorCode = SYS_ERROR;
+      _lastError.errorCode = TCP_ERROR_SYS_ERROR;
       _lastError.errorStr.clear();
       _lastError.errorStr.append(std::to_string(errNo));
       _lastError.errorStr.append(" - ");
@@ -129,7 +129,7 @@ uint16_t TcpSocket::peerPort()
     }
     return ntohs(peer.sin_port); // NOLINT(hicpp-signed-bitwise)
   }
-  _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+  _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
   _lastError.errorStr.clear();
   _lastError.errorStr = "Peer port is not available in not connected state";
   errorOccurred.emit(_lastError);
@@ -144,7 +144,7 @@ bool TcpSocket::setReadBufferSize(const uint64_t readBufferSize)
 {
   std::scoped_lock lock(_mutex);
   if (!_dataBuffer.empty()) {
-    _lastError.errorCode = NOT_ALLOWED_WHILE_BUFFER_IS_NOT_EMPTY;
+    _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_WHILE_BUFFER_IS_NOT_EMPTY;
     _lastError.errorStr.clear();
     _lastError.errorStr = "Cannot modify read buffer size while buffer is not empty";
     errorOccurred.emit(_lastError);
@@ -172,7 +172,7 @@ bool TcpSocket::setSocketDescriptor(const int sd)
     _socketD = sd;
     return true;
   }
-  _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+  _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
   _lastError.errorStr.clear();
   _lastError.errorStr = "Peer address is not available in not connected state";
   errorOccurred.emit(_lastError);
@@ -182,14 +182,14 @@ bool TcpSocket::connect(const std::string address, const uint16_t port) // NOLIN
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::NOT_CONNECTED != connectionStatus()) {
-    _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+    _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
     _lastError.errorStr.clear();
     _lastError.errorStr = "Cannot connect while already connected";
     errorOccurred.emit(_lastError);
     return false;
   }
   if (0 < _socketD) {
-    _lastError.errorCode = BAD_SOCKET_DESCRIPTOR;
+    _lastError.errorCode = TCP_ERROR_BAD_SOCKET_DESCRIPTOR;
     _lastError.errorStr.clear();
     _lastError.errorStr = "Cannot connected while socked descriptor is valid before connect operation";
     errorOccurred.emit(_lastError);
@@ -199,7 +199,7 @@ bool TcpSocket::connect(const std::string address, const uint16_t port) // NOLIN
   _socketD = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
   if (-1 == _socketD) {
     int errNo = errno;
-    _lastError.errorCode = SYS_ERROR;
+    _lastError.errorCode = TCP_ERROR_SYS_ERROR;
     _lastError.errorStr.clear();
     _lastError.errorStr.append(std::to_string(errNo));
     _lastError.errorStr.append(" - ");
@@ -214,7 +214,7 @@ bool TcpSocket::connect(const std::string address, const uint16_t port) // NOLIN
   int res = ::connect(_socketD, (sockaddr *) &addr, sizeof(addr));
   if (0 != res) {
     int errNo = errno;
-    _lastError.errorCode = SYS_ERROR;
+    _lastError.errorCode = TCP_ERROR_SYS_ERROR;
     _lastError.errorStr.clear();
     _lastError.errorStr.append(std::to_string(errNo));
     _lastError.errorStr.append(" - ");
@@ -231,7 +231,7 @@ bool TcpSocket::disconnect()
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::CONNECTED != connectionStatus()) {
-    _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+    _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
     _lastError.errorStr.clear();
     _lastError.errorStr = "Cannot disconnect while already disconnected";
     errorOccurred.emit(_lastError);
@@ -243,7 +243,7 @@ bool TcpSocket::disconnect()
     res = ::close(_socketD);
     if (0 != res) {
       int errNo = errno;
-      _lastError.errorCode = SYS_ERROR;
+      _lastError.errorCode = TCP_ERROR_SYS_ERROR;
       _lastError.errorStr.clear();
       _lastError.errorStr.append(std::to_string(errNo));
       _lastError.errorStr.append(" - ");
@@ -256,7 +256,7 @@ bool TcpSocket::disconnect()
     res = ::shutdown(_socketD, SHUT_RDWR);
     if (0 != res) {
       int errNo = errno;
-      _lastError.errorCode = SYS_ERROR;
+      _lastError.errorCode = TCP_ERROR_SYS_ERROR;
       _lastError.errorStr.clear();
       _lastError.errorStr.append(std::to_string(errNo));
       _lastError.errorStr.append(" - ");
@@ -283,7 +283,7 @@ bool TcpSocket::readFromSocket()
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::CONNECTED != connectionStatus()) {
-    _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+    _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
     _lastError.errorStr.clear();
     _lastError.errorStr = "Cannot read from socket while not connected";
     errorOccurred.emit(_lastError);
@@ -303,7 +303,7 @@ bool TcpSocket::readFromSocket()
       } else {
         // socket error
         int errNo = errno;
-        _lastError.errorCode = SYS_ERROR;
+        _lastError.errorCode = TCP_ERROR_SYS_ERROR;
         _lastError.errorStr.clear();
         _lastError.errorStr.append(std::to_string(errNo));
         _lastError.errorStr.append(" - ");
@@ -333,7 +333,7 @@ bool TcpSocket::write(const std::vector<uint8_t> &input)
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::CONNECTED != connectionStatus()) {
-    _lastError.errorCode = NOT_ALLOWED_IN_CURRENT_STATE;
+    _lastError.errorCode = TCP_ERROR_NOT_ALLOWED_IN_CURRENT_STATE;
     _lastError.errorStr.clear();
     _lastError.errorStr = "Cannot write while not connected";
     errorOccurred.emit(_lastError);
@@ -343,7 +343,7 @@ bool TcpSocket::write(const std::vector<uint8_t> &input)
   int res = ::send(_socketD, input.data(), input.size(), 0);
   if (0 != res) {
     int errNo = errno;
-    _lastError.errorCode = SYS_ERROR;
+    _lastError.errorCode = TCP_ERROR_SYS_ERROR;
     _lastError.errorStr.clear();
     _lastError.errorStr.append(std::to_string(errNo));
     _lastError.errorStr.append(" - ");

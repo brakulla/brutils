@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iomanip>
+#include <sstream>
 
 namespace brutils
 {
