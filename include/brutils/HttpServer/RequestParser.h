@@ -8,17 +8,17 @@
 namespace brutils
 {
 
-enum ParseError_e
+enum class ParseErrorCode
 {
-  PARSE_ERROR_NO_ERROR = 0,
-  PARSE_ERROR_REQUESTLINE_METHOD,
-  PARSE_ERROR_REQUESTLINE_URI,
-  PARSE_ERROR_REQUESTLINE_VERSION
+  NoError = 0,
+  Method,
+  URI,
+  Version
 };
 
 struct ParseError
 {
-  ParseError_e errorCode;
+  ParseErrorCode errorCode;
   std::string errorStr;
 };
 

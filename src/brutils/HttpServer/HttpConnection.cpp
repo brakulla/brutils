@@ -54,7 +54,7 @@ void HttpConnection::parseErrorOccured_slot(brutils::ParseError error)
 void HttpConnection::newRequestAvailable_slot(std::shared_ptr<HttpRequest> request)
 {
   auto response = createResponse(request);
-  if (HTTP_11 != request->connectionVersion()) {
+  if (HttpConnectionVersion::HTTP_11 != request->connectionVersion()) {
     response->status(HTTP_STATUS_VERSION_NOT_SUPPORTED);
     response->send();
     return;

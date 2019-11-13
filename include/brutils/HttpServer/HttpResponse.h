@@ -116,6 +116,7 @@ class HttpResponse : public br_object
   std::vector<std::byte> convertHttpResponseStatusToVector(HttpResponseStatus status);
   void sendResponse(const std::vector<std::byte> &responseData);
   void sendResponse(std::vector<std::byte> &&responseData);
+  std::vector<std::byte> convertStringToBytes(const std::string &data);
 
  protected:
   bool _privateT;

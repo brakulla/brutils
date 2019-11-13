@@ -6,22 +6,22 @@ RequestParser_v1x::RequestParser_v1x(br_object *parent) :
     RequestParser(parent),
     _parsingStatus(REQUEST_LINE),
     _methodMap({
-                   {{'G', 'E', 'T'}, GET},
-                   {{'H', 'E', 'A', 'D'}, HEAD},
-                   {{'P', 'O', 'S', 'T'}, POST},
-                   {{'P', 'U', 'T'}, PUT},
-                   {{'P', 'A', 'T', 'C', 'H'}, PATCH},
-                   {{'D', 'E', 'L', 'E', 'T', 'E'}, DELETE},
-                   {{'C', 'O', 'N', 'N', 'E', 'C', 'T'}, CONNECT},
-                   {{'O', 'P', 'T', 'I', 'O', 'N', 'S'}, OPTIONS},
-                   {{'T', 'R', 'A', 'C', 'E'}, TRACE}
+                   {{std::byte{'G'}, std::byte{'E'}, std::byte{'T'}}, GET},
+                   {{std::byte{'H'}, std::byte{'E'}, std::byte{'A'}, std::byte{'D'}}, HEAD},
+                   {{std::byte{'P'}, std::byte{'O'}, std::byte{'S'}, std::byte{'T'}}, POST},
+                   {{std::byte{'P'}, std::byte{'U'}, std::byte{'T'}}, PUT},
+                   {{std::byte{'P'}, std::byte{'A'}, std::byte{'T'}, std::byte{'C'}, std::byte{'H'}}, PATCH},
+                   {{std::byte{'D'}, std::byte{'E'}, std::byte{'L'}, std::byte{'E'}, std::byte{'T'}, std::byte{'E'}}, DELETE},
+                   {{std::byte{'C'}, std::byte{'O'}, std::byte{'N'}, std::byte{'N'}, std::byte{'E'}, std::byte{'C'}, std::byte{'T'}}, CONNECT},
+                   {{std::byte{'O'}, std::byte{'P'}, std::byte{'T'}, std::byte{'I'}, std::byte{'O'}, std::byte{'N'}, std::byte{'S'}}, OPTIONS},
+                   {{std::byte{'T'}, std::byte{'R'}, std::byte{'A'}, std::byte{'C'}, std::byte{'E'}}, TRACE}
                }),
     _versionMap({
-                    {{'H', 'T', 'T', 'P', '/', '1', '.', '0'}, HTTP_10},
-                    {{'H', 'T', 'T', 'P', '/', '1', '.', '1'}, HTTP_11}
+                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'0'}}, HTTP_10},
+                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'1'}}, HTTP_11}
                 }),
-    _newLine({{'\r', '\n'}}),
-    _emptySpace({' '})
+    _newLine({{std::byte{'\r'}, std::byte{'\n'}}}),
+    _emptySpace({std::byte{' '}})
 {
 
 }
@@ -110,7 +110,7 @@ bool RequestParser_v1x::parseRequestLine(std::vector<std::byte>::const_iterator 
   // read method
   if (!parseMethod(pos, lineEndPos)) {
     ParseError error {
-        PARSE_ERROR_REQUESTLINE_METHOD,
+        ParseErrorCode::Method,
         "Cannot parse method in request line"
     };
     errorOccured.emit(error);
@@ -120,7 +120,7 @@ bool RequestParser_v1x::parseRequestLine(std::vector<std::byte>::const_iterator 
   // read path and query
   if (!parsePathAndQuery(pos, lineEndPos)) {
     ParseError error {
-        PARSE_ERROR_REQUESTLINE_URI,
+        ParseErrorCode::URI,
         "Cannot parse uri in request line"
     };
     return false;
@@ -129,7 +129,7 @@ bool RequestParser_v1x::parseRequestLine(std::vector<std::byte>::const_iterator 
   // read http protocol version
   if (!parseVersion(pos, lineEndPos)) {
     ParseError error {
-        PARSE_ERROR_REQUESTLINE_VERSION,
+        ParseErrorCode::Version,
         "Cannot parse version in request line"
     };
     return false;

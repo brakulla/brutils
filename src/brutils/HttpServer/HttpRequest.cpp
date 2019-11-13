@@ -12,7 +12,7 @@ using namespace brutils;
 HttpRequest::HttpRequest(br_object *parent) :
     br_object(parent),
     _method(UNKNOWN_METHOD),
-    _version(UNKNOWN_VERSION)
+    _version(HttpConnectionVersion::UNKNOWN)
 {
 
 }

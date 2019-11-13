@@ -10,64 +10,64 @@ using namespace brutils;
 HttpResponse::HttpResponse(br_object *parent) :
     br_object(parent),
     _statusMessageMap({
-                          {HTTP_STATUS_CONTINUE, {'C', 'o', 'n', 't', 'i', 'n', 'u', 'e'}},
-                          {HTTP_STATUS_SWITCHING_PROTOCOL, {'S', 'w', 'i', 't', 'c', 'h', 'i', 'n', 'g', ' ', 'P', 'r', 'o', 't', 'o', 'c', 'o', 'l'}},
-                          {HTTP_STATUS_OK, {'O', 'K'}},
-                          {HTTP_STATUS_CREATED, {'C', 'r', 'e', 'a', 't', 'e', 'd'}},
-                          {HTTP_STATUS_ACCEPTED, {'A', 'c', 'c', 'e', 'p', 't', 'e', 'd'}},
-                          {HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION, {'N', 'o', 'n', '-', 'A', 'u', 't', 'h', 'o', 'r', 'i', 't', 'a', 't', 'i', 'v', 'e', ' ', 'I', 'n', 'f', 'o', 'r', 'm', 'a', 't', 'i', 'o', 'n'}},
-                          {HTTP_STATUS_NO_CONTENT, {'N', 'o', ' ', 'C', 'o', 'n', 't', 'e', 'n', 't'}},
-                          {HTTP_STATUS_RESET_CONTENT, {'R', 'e', 's', 'e', 't', ' ', 'C', 'o', 'n', 't', 'e', 'n', 't'}},
-                          {HTTP_STATUS_PARTIAL_CONTENT, {'P', 'a', 'r', 't', 'i', 'a', 'l', ' ', 'C', 'o', 'n', 't', 'e', 'n', 't'}},
-                          {HTTP_STATUS_MULTIPLE_CHOICES, {'M', 'u', 'l', 't', 'i', 'p', 'l', 'e', ' ', 'C', 'h', 'o', 'i', 'c', 'e', 's'}},
-                          {HTTP_STATUS_MOVED_PERMANENTLY, {'M', 'o', 'v', 'e', 'd', ' ', 'P', 'e', 'r', 'm', 'a', 'n', 'e', 'n', 't', 'l', 'y'}},
-                          {HTTP_STATUS_FOUND, {'F', 'o', 'u', 'n', 'd'}},
-                          {HTTP_STATUS_SEE_OTHER, {'S', 'e', 'e', ' ', 'O', 't', 'h', 'e', 'r'}},
-                          {HTTP_STATUS_NOT_MODIFIED, {'N', 'o', 't', ' ', 'M', 'o', 'd', 'i', 'f', 'i', 'e', 'd'}},
-                          {HTTP_STATUS_USE_PROXY, {'U', 's', 'e', ' ', 'P', 'r', 'o', 'x', 'y'}},
-                          {HTTP_STATUS_TEMPORARY_REDIRECT, {'T', 'e', 'm', 'p', 'o', 'r', 'a', 'r', 'y', ' ', 'R', 'e', 'd', 'i', 'r', 'e', 'c', 't'}},
-                          {HTTP_STATUS_PERMANENT_REDIRECT, {'P', 'e', 'r', 'm', 'a', 'n', 'e', 'n', 't', ' ', 'R', 'e', 'd', 'i', 'r', 'e', 'c', 't'}},
-                          {HTTP_STATUS_BAD_REQUEST, {'B', 'a', 'd', ' ', 'R', 'e', 'q', 'u', 'e', 's', 't'}},
-                          {HTTP_STATUS_UNAUTHORIZED, {'U', 'n', 'a', 'u', 't', 'h', 'o', 'r', 'i', 'z', 'e', 'd'}},
-                          {HTTP_STATUS_PAYMENT_REQUIRED, {'P', 'a', 'y', 'm', 'e', 'n', 't', ' ', 'R', 'e', 'q', 'u', 'i', 'r', 'e', 'd'}},
-                          {HTTP_STATUS_FORBIDDEN, {'F', 'o', 'r', 'b', 'i', 'd', 'd', 'e', 'n'}},
-                          {HTTP_STATUS_NOT_FOUND, {'N', 'o', 't', ' ', 'F', 'o', 'u', 'n', 'd'}},
-                          {HTTP_STATUS_METHOD_NOT_ALLOWED, {'M', 'e', 't', 'h', 'o', 'd', ' ', 'N', 'o', 't', ' ', 'A', 'l', 'l', 'o', 'w', 'e', 'd'}},
-                          {HTTP_STATUS_NOT_ACCEPTABLE, {'N', 'o', 't', ' ', 'A', 'c', 'c', 'e', 'p', 't', 'a', 'b', 'l', 'e'}},
-                          {HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED, {'P', 'r', 'o', 'x', 'y', ' ', 'A', 'u', 't', 'h', 'e', 'n', 't', 'i', 'c', 'a', 't', 'i','o', 'n', ',', 'R', 'e', 'q', 'u', 'i', 'r', 'e', 'd'}},
-                          {HTTP_STATUS_REQUEST_TIMEOUT, {'R', 'e', 'q', 'u', 'e', 's', 't', ' ', 'T', 'i', 'm', 'e', '-', 'o', 'u', 't'}},
-                          {HTTP_STATUS_CONFLICT, {'C', 'o', 'n', 'f', 'l', 'i', 'c', 't'}},
-                          {HTTP_STATUS_GONE, {'G', 'o', 'n', 'e'}},
-                          {HTTP_STATUS_LENGTH_REQUIRED, {'L', 'e', 'n', 'g', 't', 'h', ' ', 'R', 'e', 'q', 'u', 'i', 'r', 'e', 'd'}},
-                          {HTTP_STATUS_PRECONDITION_FAILED, {'P', 'r', 'e', 'c', 'o', 'n', 'd', 'i', 't', 'i', 'o', 'n', ' ', 'F', 'a', 'i', 'l', 'e', 'd'}},
-                          {HTTP_STATUS_PAYLOAD_TOO_LARGE, {'R', 'e', 'q', 'u', 'e', 's', 't', ' ', 'E', 'n', 't', 'i', 't', 'y', ' ', 'T', 'o', 'o', ' ', 'L', 'a', 'r', 'g', 'e'}},
-                          {HTTP_STATUS_URI_TOO_LONG, {'R', 'e', 'q', 'u', 'e', 's', 't', '-', 'U', 'R', 'I', ' ', 'T', 'o', 'o', ' ', 'L', 'a', 'r', 'g', 'e'}},
-                          {HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {'U', 'n', 's', 'u', 'p', 'p', 'o', 'r', 't', 'e', 'd', ' ', 'M', 'e', 'd', 'i', 'a', ' ', 'T', 'y', 'p', 'e'}},
-                          {HTTP_STATUS_RANGE_NOT_SATISFIABLE, {'R', 'a', 'n', 'g', 'e', ' ', 'N', 'o', 't', ' ', 'S', 'a', 't', 'i', 's', 'f', 'i', 'a', 'b', 'l', 'e'}},
-                          {HTTP_STATUS_EXPECTATION_FAILED, {'E', 'x', 'p', 'e', 'c', 't', 'a', 't', 'i', 'o', 'n', ' ', 'F', 'a', 'i', 'l', 'e', 'd'}},
-                          {HTTP_STATUS_IM_A_TEAPOT, {'I', '\'', 'm', ' ', 'a', ' ', 'T', 'e', 'a', 'p', 'o', 't'}},
-                          {HTTP_STATUS_UNPROCESSABLE_ENTITY, {'U', 'n', 'p', 'r', 'o', 'c', 'e', 's', 's', 'a', 'b', 'l', 'e', ' ', 'E', 'n', 't', 'i', 't', 'y'}},
-                          {HTTP_STATUS_TOO_EARLY, {'T', 'o', 'o', ' ', 'E', 'a', 'r', 'l', 'y'}},
-                          {HTTP_STATUS_UPGRADE_REQUIRED, {'U', 'p', 'g', 'r', 'a', 'd', 'e', ' ', 'R', 'e', 'q', 'u', 'i', 'r', 'e', 'd'}},
-                          {HTTP_STATUS_PRECONDITION_REQUIRED, {'P', 'r', 'e', 'c', 'o', 'n', 'd', 'i', 't', 'i', 'o', 'n',' ', 'R', 'e', 'q', 'u', 'i', 'r', 'e', 'd'}},
-                          {HTTP_STATUS_TOO_MANY_REQUESTS, {'T', 'o', 'o', ' ', 'M', 'a', 'n', 'y', ' ', 'R', 'e', 'q', 'u', 'e', 's', 't', 's'}},
-                          {HTTP_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS, {'U', 'n', 'a', 'v', 'a', 'i', 'l', 'b', 'l', 'e', ' ', 'F', 'o', 'r', ' ', 'L', 'e', 'g', 'a', 'l', ' ', 'R', 'e', 'a', 's', 'o', 'n', 's'}},
-                          {HTTP_STATUS_INTERNAL_SERVER_ERROR, {'I', 'n', 't', 'e', 'r', 'n', 'a', 'l', ' ', 'S', 'e', 'r', 'v', 'e', 'r', ' ', 'E', 'r', 'r', 'o', 'r'}},
-                          {HTTP_STATUS_NOT_IMPLEMENTED, {'N', 'o', 't', ' ', 'I', 'm', 'p', 'l', 'e', 'm', 'e', 'n', 't', 'e', 'd'}},
-                          {HTTP_STATUS_BAD_GATEWAY, {'B', 'a', 'd', ' ', 'G', 'a', 't', 'e', 'w', 'a', 'y'}},
-                          {HTTP_STATUS_SERVICE_UNAVAILABLE, {'S', 'e', 'r', 'v', 'i', 'c', 'e', ' ', 'U', 'n', 'a', 'v', 'a', 'i', 'l', 'a', 'b', 'l', 'e'}},
-                          {HTTP_STATUS_GATEWAY_TIMEOUT, {'G', 'e', 't', 'e', 'w', 'a', 'y', ' ', 'T', 'i', 'm', 'e', 'o', 'u', 't'}},
-                          {HTTP_STATUS_VERSION_NOT_SUPPORTED, {'V', 'e', 'r', 's', 'i', 'o', 'n', ' ', 'N', 'o', 't', ' ', 'S', 'u', 'p', 'p', 'o', 'r', 't', 'e', 'd'}},
-                          {HTTP_STATUS_NETWORK_AUTHENTICATION_REQUIRED, {'N', 'e', 't', 'w', 'o', 'r', 'k', ' ' , 'A', 'u', 't', 'h', 'e', 'n', 't', 'i', 'c', 'a', 't', 'i', 'o', 'n', ' ', 'R', 'e', 'q', 'u', 'i', 'r', 'e', 'd'}}
+                          {HTTP_STATUS_CONTINUE, {std::byte{'C'}, std::byte{'o'}, std::byte{'n'}, std::byte{'t'}, std::byte{'i'}, std::byte{'n'}, std::byte{'u'}, std::byte{'e'}}},
+                          {HTTP_STATUS_SWITCHING_PROTOCOL, {std::byte{'S'}, std::byte{'w'}, std::byte{'i'}, std::byte{'t'}, std::byte{'c'}, std::byte{'h'}, std::byte{'i'}, std::byte{'n'}, std::byte{'g'}, std::byte{' '}, std::byte{'P'}, std::byte{'r'}, std::byte{'o'}, std::byte{'t'}, std::byte{'o'}, std::byte{'c'}, std::byte{'o'}, std::byte{'l'}}},
+                          {HTTP_STATUS_OK, {std::byte{'O'}, std::byte{'K'}}},
+                          {HTTP_STATUS_CREATED, {std::byte{'C'}, std::byte{'r'}, std::byte{'e'}, std::byte{'a'}, std::byte{'t'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_ACCEPTED, {std::byte{'A'}, std::byte{'c'}, std::byte{'c'}, std::byte{'e'}, std::byte{'p'}, std::byte{'t'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION, {std::byte{'N'}, std::byte{'o'}, std::byte{'n'}, std::byte{'-'}, std::byte{'A'}, std::byte{'u'}, std::byte{'t'}, std::byte{'h'}, std::byte{'o'}, std::byte{'r'}, std::byte{'i'}, std::byte{'t'}, std::byte{'a'}, std::byte{'t'}, std::byte{'i'}, std::byte{'v'}, std::byte{'e'}, std::byte{' '}, std::byte{'I'}, std::byte{'n'}, std::byte{'f'}, std::byte{'o'}, std::byte{'r'}, std::byte{'m'}, std::byte{'a'}, std::byte{'t'}, std::byte{'i'}, std::byte{'o'}, std::byte{'n'}}},
+                          {HTTP_STATUS_NO_CONTENT, {std::byte{'N'}, std::byte{'o'}, std::byte{' '}, std::byte{'C'}, std::byte{'o'}, std::byte{'n'}, std::byte{'t'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}}},
+                          {HTTP_STATUS_RESET_CONTENT, {std::byte{'R'}, std::byte{'e'}, std::byte{'s'}, std::byte{'e'}, std::byte{'t'}, std::byte{' '}, std::byte{'C'}, std::byte{'o'}, std::byte{'n'}, std::byte{'t'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}}},
+                          {HTTP_STATUS_PARTIAL_CONTENT, {std::byte{'P'}, std::byte{'a'}, std::byte{'r'}, std::byte{'t'}, std::byte{'i'}, std::byte{'a'}, std::byte{'l'}, std::byte{' '}, std::byte{'C'}, std::byte{'o'}, std::byte{'n'}, std::byte{'t'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}}},
+                          {HTTP_STATUS_MULTIPLE_CHOICES, {std::byte{'M'}, std::byte{'u'}, std::byte{'l'}, std::byte{'t'}, std::byte{'i'}, std::byte{'p'}, std::byte{'l'}, std::byte{'e'}, std::byte{' '}, std::byte{'C'}, std::byte{'h'}, std::byte{'o'}, std::byte{'i'}, std::byte{'c'}, std::byte{'e'}, std::byte{'s'}}},
+                          {HTTP_STATUS_MOVED_PERMANENTLY, {std::byte{'M'}, std::byte{'o'}, std::byte{'v'}, std::byte{'e'}, std::byte{'d'}, std::byte{' '}, std::byte{'P'}, std::byte{'e'}, std::byte{'r'}, std::byte{'m'}, std::byte{'a'}, std::byte{'n'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}, std::byte{'l'}, std::byte{'y'}}},
+                          {HTTP_STATUS_FOUND, {std::byte{'F'}, std::byte{'o'}, std::byte{'u'}, std::byte{'n'}, std::byte{'d'}}},
+                          {HTTP_STATUS_SEE_OTHER, {std::byte{'S'}, std::byte{'e'}, std::byte{'e'}, std::byte{' '}, std::byte{'O'}, std::byte{'t'}, std::byte{'h'}, std::byte{'e'}, std::byte{'r'}}},
+                          {HTTP_STATUS_NOT_MODIFIED, {std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'M'}, std::byte{'o'}, std::byte{'d'}, std::byte{'i'}, std::byte{'f'}, std::byte{'i'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_USE_PROXY, {std::byte{'U'}, std::byte{'s'}, std::byte{'e'}, std::byte{' '}, std::byte{'P'}, std::byte{'r'}, std::byte{'o'}, std::byte{'x'}, std::byte{'y'}}},
+                          {HTTP_STATUS_TEMPORARY_REDIRECT, {std::byte{'T'}, std::byte{'e'}, std::byte{'m'}, std::byte{'p'}, std::byte{'o'}, std::byte{'r'}, std::byte{'a'}, std::byte{'r'}, std::byte{'y'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'d'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'c'}, std::byte{'t'}}},
+                          {HTTP_STATUS_PERMANENT_REDIRECT, {std::byte{'P'}, std::byte{'e'}, std::byte{'r'}, std::byte{'m'}, std::byte{'a'}, std::byte{'n'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'d'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'c'}, std::byte{'t'}}},
+                          {HTTP_STATUS_BAD_REQUEST, {std::byte{'B'}, std::byte{'a'}, std::byte{'d'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'e'}, std::byte{'s'}, std::byte{'t'}}},
+                          {HTTP_STATUS_UNAUTHORIZED, {std::byte{'U'}, std::byte{'n'}, std::byte{'a'}, std::byte{'u'}, std::byte{'t'}, std::byte{'h'}, std::byte{'o'}, std::byte{'r'}, std::byte{'i'}, std::byte{'z'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_PAYMENT_REQUIRED, {std::byte{'P'}, std::byte{'a'}, std::byte{'y'}, std::byte{'m'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_FORBIDDEN, {std::byte{'F'}, std::byte{'o'}, std::byte{'r'}, std::byte{'b'}, std::byte{'i'}, std::byte{'d'}, std::byte{'d'}, std::byte{'e'}, std::byte{'n'}}},
+                          {HTTP_STATUS_NOT_FOUND, {std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'F'}, std::byte{'o'}, std::byte{'u'}, std::byte{'n'}, std::byte{'d'}}},
+                          {HTTP_STATUS_METHOD_NOT_ALLOWED, {std::byte{'M'}, std::byte{'e'}, std::byte{'t'}, std::byte{'h'}, std::byte{'o'}, std::byte{'d'}, std::byte{' '}, std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'A'}, std::byte{'l'}, std::byte{'l'}, std::byte{'o'}, std::byte{'w'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_NOT_ACCEPTABLE, {std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'A'}, std::byte{'c'}, std::byte{'c'}, std::byte{'e'}, std::byte{'p'}, std::byte{'t'}, std::byte{'a'}, std::byte{'b'}, std::byte{'l'}, std::byte{'e'}}},
+                          {HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED, {std::byte{'P'}, std::byte{'r'}, std::byte{'o'}, std::byte{'x'}, std::byte{'y'}, std::byte{' '}, std::byte{'A'}, std::byte{'u'}, std::byte{'t'}, std::byte{'h'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}, std::byte{'i'}, std::byte{'c'}, std::byte{'a'}, std::byte{'t'}, std::byte{'i'},std::byte{'o'}, std::byte{'n'}, std::byte{','}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_REQUEST_TIMEOUT, {std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'e'}, std::byte{'s'}, std::byte{'t'}, std::byte{' '}, std::byte{'T'}, std::byte{'i'}, std::byte{'m'}, std::byte{'e'}, std::byte{'-'}, std::byte{'o'}, std::byte{'u'}, std::byte{'t'}}},
+                          {HTTP_STATUS_CONFLICT, {std::byte{'C'}, std::byte{'o'}, std::byte{'n'}, std::byte{'f'}, std::byte{'l'}, std::byte{'i'}, std::byte{'c'}, std::byte{'t'}}},
+                          {HTTP_STATUS_GONE, {std::byte{'G'}, std::byte{'o'}, std::byte{'n'}, std::byte{'e'}}},
+                          {HTTP_STATUS_LENGTH_REQUIRED, {std::byte{'L'}, std::byte{'e'}, std::byte{'n'}, std::byte{'g'}, std::byte{'t'}, std::byte{'h'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_PRECONDITION_FAILED, {std::byte{'P'}, std::byte{'r'}, std::byte{'e'}, std::byte{'c'}, std::byte{'o'}, std::byte{'n'}, std::byte{'d'}, std::byte{'i'}, std::byte{'t'}, std::byte{'i'}, std::byte{'o'}, std::byte{'n'}, std::byte{' '}, std::byte{'F'}, std::byte{'a'}, std::byte{'i'}, std::byte{'l'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_PAYLOAD_TOO_LARGE, {std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'e'}, std::byte{'s'}, std::byte{'t'}, std::byte{' '}, std::byte{'E'}, std::byte{'n'}, std::byte{'t'}, std::byte{'i'}, std::byte{'t'}, std::byte{'y'}, std::byte{' '}, std::byte{'T'}, std::byte{'o'}, std::byte{'o'}, std::byte{' '}, std::byte{'L'}, std::byte{'a'}, std::byte{'r'}, std::byte{'g'}, std::byte{'e'}}},
+                          {HTTP_STATUS_URI_TOO_LONG, {std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'e'}, std::byte{'s'}, std::byte{'t'}, std::byte{'-'}, std::byte{'U'}, std::byte{'R'}, std::byte{'I'}, std::byte{' '}, std::byte{'T'}, std::byte{'o'}, std::byte{'o'}, std::byte{' '}, std::byte{'L'}, std::byte{'a'}, std::byte{'r'}, std::byte{'g'}, std::byte{'e'}}},
+                          {HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {std::byte{'U'}, std::byte{'n'}, std::byte{'s'}, std::byte{'u'}, std::byte{'p'}, std::byte{'p'}, std::byte{'o'}, std::byte{'r'}, std::byte{'t'}, std::byte{'e'}, std::byte{'d'}, std::byte{' '}, std::byte{'M'}, std::byte{'e'}, std::byte{'d'}, std::byte{'i'}, std::byte{'a'}, std::byte{' '}, std::byte{'T'}, std::byte{'y'}, std::byte{'p'}, std::byte{'e'}}},
+                          {HTTP_STATUS_RANGE_NOT_SATISFIABLE, {std::byte{'R'}, std::byte{'a'}, std::byte{'n'}, std::byte{'g'}, std::byte{'e'}, std::byte{' '}, std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'S'}, std::byte{'a'}, std::byte{'t'}, std::byte{'i'}, std::byte{'s'}, std::byte{'f'}, std::byte{'i'}, std::byte{'a'}, std::byte{'b'}, std::byte{'l'}, std::byte{'e'}}},
+                          {HTTP_STATUS_EXPECTATION_FAILED, {std::byte{'E'}, std::byte{'x'}, std::byte{'p'}, std::byte{'e'}, std::byte{'c'}, std::byte{'t'}, std::byte{'a'}, std::byte{'t'}, std::byte{'i'}, std::byte{'o'}, std::byte{'n'}, std::byte{' '}, std::byte{'F'}, std::byte{'a'}, std::byte{'i'}, std::byte{'l'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_IM_A_TEAPOT, {std::byte{'I'}, std::byte{'\''}, std::byte{'m'}, std::byte{' '}, std::byte{'a'}, std::byte{' '}, std::byte{'T'}, std::byte{'e'}, std::byte{'a'}, std::byte{'p'}, std::byte{'o'}, std::byte{'t'}}},
+                          {HTTP_STATUS_UNPROCESSABLE_ENTITY, {std::byte{'U'}, std::byte{'n'}, std::byte{'p'}, std::byte{'r'}, std::byte{'o'}, std::byte{'c'}, std::byte{'e'}, std::byte{'s'}, std::byte{'s'}, std::byte{'a'}, std::byte{'b'}, std::byte{'l'}, std::byte{'e'}, std::byte{' '}, std::byte{'E'}, std::byte{'n'}, std::byte{'t'}, std::byte{'i'}, std::byte{'t'}, std::byte{'y'}}},
+                          {HTTP_STATUS_TOO_EARLY, {std::byte{'T'}, std::byte{'o'}, std::byte{'o'}, std::byte{' '}, std::byte{'E'}, std::byte{'a'}, std::byte{'r'}, std::byte{'l'}, std::byte{'y'}}},
+                          {HTTP_STATUS_UPGRADE_REQUIRED, {std::byte{'U'}, std::byte{'p'}, std::byte{'g'}, std::byte{'r'}, std::byte{'a'}, std::byte{'d'}, std::byte{'e'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_PRECONDITION_REQUIRED, {std::byte{'P'}, std::byte{'r'}, std::byte{'e'}, std::byte{'c'}, std::byte{'o'}, std::byte{'n'}, std::byte{'d'}, std::byte{'i'}, std::byte{'t'}, std::byte{'i'}, std::byte{'o'}, std::byte{'n'},std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_TOO_MANY_REQUESTS, {std::byte{'T'}, std::byte{'o'}, std::byte{'o'}, std::byte{' '}, std::byte{'M'}, std::byte{'a'}, std::byte{'n'}, std::byte{'y'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'e'}, std::byte{'s'}, std::byte{'t'}, std::byte{'s'}}},
+                          {HTTP_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS, {std::byte{'U'}, std::byte{'n'}, std::byte{'a'}, std::byte{'v'}, std::byte{'a'}, std::byte{'i'}, std::byte{'l'}, std::byte{'b'}, std::byte{'l'}, std::byte{'e'}, std::byte{' '}, std::byte{'F'}, std::byte{'o'}, std::byte{'r'}, std::byte{' '}, std::byte{'L'}, std::byte{'e'}, std::byte{'g'}, std::byte{'a'}, std::byte{'l'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'a'}, std::byte{'s'}, std::byte{'o'}, std::byte{'n'}, std::byte{'s'}}},
+                          {HTTP_STATUS_INTERNAL_SERVER_ERROR, {std::byte{'I'}, std::byte{'n'}, std::byte{'t'}, std::byte{'e'}, std::byte{'r'}, std::byte{'n'}, std::byte{'a'}, std::byte{'l'}, std::byte{' '}, std::byte{'S'}, std::byte{'e'}, std::byte{'r'}, std::byte{'v'}, std::byte{'e'}, std::byte{'r'}, std::byte{' '}, std::byte{'E'}, std::byte{'r'}, std::byte{'r'}, std::byte{'o'}, std::byte{'r'}}},
+                          {HTTP_STATUS_NOT_IMPLEMENTED, {std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'I'}, std::byte{'m'}, std::byte{'p'}, std::byte{'l'}, std::byte{'e'}, std::byte{'m'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_BAD_GATEWAY, {std::byte{'B'}, std::byte{'a'}, std::byte{'d'}, std::byte{' '}, std::byte{'G'}, std::byte{'a'}, std::byte{'t'}, std::byte{'e'}, std::byte{'w'}, std::byte{'a'}, std::byte{'y'}}},
+                          {HTTP_STATUS_SERVICE_UNAVAILABLE, {std::byte{'S'}, std::byte{'e'}, std::byte{'r'}, std::byte{'v'}, std::byte{'i'}, std::byte{'c'}, std::byte{'e'}, std::byte{' '}, std::byte{'U'}, std::byte{'n'}, std::byte{'a'}, std::byte{'v'}, std::byte{'a'}, std::byte{'i'}, std::byte{'l'}, std::byte{'a'}, std::byte{'b'}, std::byte{'l'}, std::byte{'e'}}},
+                          {HTTP_STATUS_GATEWAY_TIMEOUT, {std::byte{'G'}, std::byte{'e'}, std::byte{'t'}, std::byte{'e'}, std::byte{'w'}, std::byte{'a'}, std::byte{'y'}, std::byte{' '}, std::byte{'T'}, std::byte{'i'}, std::byte{'m'}, std::byte{'e'}, std::byte{'o'}, std::byte{'u'}, std::byte{'t'}}},
+                          {HTTP_STATUS_VERSION_NOT_SUPPORTED, {std::byte{'V'}, std::byte{'e'}, std::byte{'r'}, std::byte{'s'}, std::byte{'i'}, std::byte{'o'}, std::byte{'n'}, std::byte{' '}, std::byte{'N'}, std::byte{'o'}, std::byte{'t'}, std::byte{' '}, std::byte{'S'}, std::byte{'u'}, std::byte{'p'}, std::byte{'p'}, std::byte{'o'}, std::byte{'r'}, std::byte{'t'}, std::byte{'e'}, std::byte{'d'}}},
+                          {HTTP_STATUS_NETWORK_AUTHENTICATION_REQUIRED, {std::byte{'N'}, std::byte{'e'}, std::byte{'t'}, std::byte{'w'}, std::byte{'o'}, std::byte{'r'}, std::byte{'k'}, std::byte{' '} , std::byte{'A'}, std::byte{'u'}, std::byte{'t'}, std::byte{'h'}, std::byte{'e'}, std::byte{'n'}, std::byte{'t'}, std::byte{'i'}, std::byte{'c'}, std::byte{'a'}, std::byte{'t'}, std::byte{'i'}, std::byte{'o'}, std::byte{'n'}, std::byte{' '}, std::byte{'R'}, std::byte{'e'}, std::byte{'q'}, std::byte{'u'}, std::byte{'i'}, std::byte{'r'}, std::byte{'e'}, std::byte{'d'}}}
                       }),
     _versionMap({
-                    {HTTP_10, {'H', 'T', 'T', 'P', '/', '1', '.', '0'}},
-                    {HTTP_11, {'H', 'T', 'T', 'P', '/', '1', '.', '1'}}
+                    {HttpConnectionVersion::HTTP_10, {std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'0'}}},
+                    {HttpConnectionVersion::HTTP_11, {std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'1'}}}
                 }),
-    _version(UNKNOWN_VERSION),
+    _version(HttpConnectionVersion::UNKNOWN),
     _status(HTTP_STATUS_OK),
-    _newLine({'\r', '\n'}),
-    _headerSeparator({':', ' '}),
+    _newLine({std::byte{'\r'}, std::byte{'\n'}}),
+    _headerSeparator({std::byte{':'}, std::byte{' '}}),
     _privateT(false)
 {
 
@@ -137,25 +137,25 @@ void HttpResponse::send()
 void HttpResponse::send(const std::string &content, const std::string &contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<std::byte> data(content.begin(), content.end());
+  std::vector<std::byte> data = convertStringToBytes(content);
   sendResponse(data);
 }
 void HttpResponse::send(std::string &&content, const std::string &contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<std::byte> data(content.begin(), content.end());
+  std::vector<std::byte> data = convertStringToBytes(content);
   sendResponse(data);
 }
 void HttpResponse::send(const std::string &content, std::string &&contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<std::byte> data(content.begin(), content.end());
+  std::vector<std::byte> data = convertStringToBytes(content);
   sendResponse(data);
 }
 void HttpResponse::send(std::string &&content, std::string &&contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<std::byte> data(content.begin(), content.end());
+  std::vector<std::byte> data = convertStringToBytes(content);
   sendResponse(data);
 }
 void HttpResponse::send(const std::vector<std::byte> &content, const std::string &contentType)
@@ -181,13 +181,13 @@ void HttpResponse::send(std::vector<std::byte> &&content, std::string &&contentT
 void HttpResponse::sendJson(const variant &map)
 {
   auto json = json_generator::generate(map);
-  std::vector<std::byte> jsonData(json.begin(), json.end());
+  std::vector<std::byte> jsonData = convertStringToBytes(json);
   sendResponse(std::move(jsonData));
 }
 void HttpResponse::sendJson(variant &&map)
 {
   auto json = json_generator::generate(map);
-  std::vector<std::byte> jsonData(json.begin(), json.end());
+  std::vector<std::byte> jsonData = convertStringToBytes(json);
   sendResponse(std::move(jsonData));
 }
 void HttpResponse::sendXml(const variant &map)
@@ -208,15 +208,15 @@ void HttpResponse::sendFile(std::filesystem::path &&filePath)
 }
 void HttpResponse::sendResponse(const std::vector<std::byte> &responseData)
 {
-  if (UNKNOWN_VERSION == _version) {
-    _version = HTTP_11;
+  if (HttpConnectionVersion::UNKNOWN == _version) {
+    _version = HttpConnectionVersion::HTTP_11;
   }
 
   std::vector<std::byte> response;
 
   // response status line
   response.insert(response.end(), _versionMap.at(_version).begin(), _versionMap.at(_version).end());
-  response.push_back(' ');
+  response.push_back(std::byte{' '});
   auto status = convertHttpResponseStatusToVector(_status);
   response.insert(response.end(), status.begin(), status.end());
   response.insert(response.end(), _statusMessageMap.at(_status).begin(), _statusMessageMap.at(_status).end());
@@ -224,9 +224,11 @@ void HttpResponse::sendResponse(const std::vector<std::byte> &responseData)
 
   // headers
   for (auto &headerPair: _headerMap) {
-    response.insert(response.end(), headerPair.first.begin(), headerPair.first.end());
+    std::vector<std::byte> headerKey = convertStringToBytes(headerPair.first);
+    std::vector<std::byte> headerValue = convertStringToBytes(headerPair.second);
+    response.insert(response.end(), headerKey.begin(), headerKey.end());
     response.insert(response.end(), _headerSeparator.begin(), _headerSeparator.end());
-    response.insert(response.end(), headerPair.second.begin(), headerPair.second.end());
+    response.insert(response.end(), headerValue.begin(), headerValue.end());
     response.insert(response.end(), _newLine.begin(), _newLine.end());
   }
 
@@ -240,15 +242,15 @@ void HttpResponse::sendResponse(const std::vector<std::byte> &responseData)
 }
 void HttpResponse::sendResponse(std::vector<std::byte> &&responseData)
 {
-  if (UNKNOWN_VERSION == _version) {
-    _version = HTTP_11;
+  if (HttpConnectionVersion::UNKNOWN == _version) {
+    _version = HttpConnectionVersion::HTTP_11;
   }
 
   std::vector<std::byte> response;
 
   // response status line
   response.insert(response.end(), _versionMap.at(_version).begin(), _versionMap.at(_version).end());
-  response.push_back(' ');
+  response.push_back(std::byte{' '});
   auto status = convertHttpResponseStatusToVector(_status);
   response.insert(response.end(), status.begin(), status.end());
   response.insert(response.end(), _statusMessageMap.at(_status).begin(), _statusMessageMap.at(_status).end());
@@ -256,9 +258,11 @@ void HttpResponse::sendResponse(std::vector<std::byte> &&responseData)
 
   // headers
   for (auto &headerPair: _headerMap) {
-    response.insert(response.end(), headerPair.first.begin(), headerPair.first.end());
+    std::vector<std::byte> headerKey = convertStringToBytes(headerPair.first);
+    std::vector<std::byte> headerValue = convertStringToBytes(headerPair.second);
+    response.insert(response.end(), headerKey.begin(), headerKey.end());
     response.insert(response.end(), _headerSeparator.begin(), _headerSeparator.end());
-    response.insert(response.end(), headerPair.second.begin(), headerPair.second.end());
+    response.insert(response.end(), headerValue.begin(), headerValue.end());
     response.insert(response.end(), _newLine.begin(), _newLine.end());
   }
 
@@ -273,6 +277,14 @@ void HttpResponse::sendResponse(std::vector<std::byte> &&responseData)
 std::vector<std::byte> HttpResponse::convertHttpResponseStatusToVector(HttpResponseStatus status)
 {
   std::string statusStr = std::to_string((int)status);
-  std::vector<std::byte> statusVec(statusStr.begin(), statusStr.end());
+  std::vector<std::byte> statusVec = convertStringToBytes(statusStr);
   return statusVec;
+}
+std::vector<std::byte> HttpResponse::convertStringToBytes(const std::string &data)
+{
+  std::vector<std::byte> vector;
+  std::transform(data.begin(), data.end(), vector.end(), [](auto &c) {
+    return std::byte(c);
+  });
+  return vector;
 }

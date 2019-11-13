@@ -25,13 +25,13 @@ enum HttpRequestMethod
   UNKNOWN_METHOD
 };
 
-enum HttpConnectionVersion
+enum class HttpConnectionVersion
 {
   HTTP_10,
   HTTP_11,
   HTTP_20,
   HTTP_30,
-  UNKNOWN_VERSION
+  UNKNOWN
 };
 
 class HttpRequest : public br_object
