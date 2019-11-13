@@ -93,10 +93,10 @@ class HttpResponse : public br_object
   void send(std::string &&content, const std::string &contentType);
   void send(const std::string &content, std::string &&contentType);
   void send(std::string &&content, std::string &&contentType);
-  void send(const std::vector<uint8_t> &content, const std::string &contentType);
-  void send(std::vector<uint8_t> &&content, const std::string &contentType);
-  void send(const std::vector<uint8_t> &content, std::string &&contentType);
-  void send(std::vector<uint8_t> &&content, std::string &&contentType);
+  void send(const std::vector<std::byte> &content, const std::string &contentType);
+  void send(std::vector<std::byte> &&content, const std::string &contentType);
+  void send(const std::vector<std::byte> &content, std::string &&contentType);
+  void send(std::vector<std::byte> &&content, std::string &&contentType);
   void sendJson(const variant &map);
   void sendJson(variant &&map);
   void sendXml(const variant &map);
@@ -107,15 +107,15 @@ class HttpResponse : public br_object
  protected:
   HttpConnectionVersion _version;
   HttpResponseStatus _status;
-  std::map<HttpResponseStatus, std::vector<uint8_t>> _statusMessageMap;
-  std::map<HttpConnectionVersion, std::vector<uint8_t>> _versionMap;
+  std::map<HttpResponseStatus, std::vector<std::byte>> _statusMessageMap;
+  std::map<HttpConnectionVersion, std::vector<std::byte>> _versionMap;
   std::map<std::string, std::string> _headerMap;
-  std::vector<uint8_t> _newLine;
-  std::vector<uint8_t> _headerSeparator;
+  std::vector<std::byte> _newLine;
+  std::vector<std::byte> _headerSeparator;
 
-  std::vector<uint8_t> convertHttpResponseStatusToVector(HttpResponseStatus status);
-  void sendResponse(const std::vector<uint8_t> &responseData);
-  void sendResponse(std::vector<uint8_t> &&responseData);
+  std::vector<std::byte> convertHttpResponseStatusToVector(HttpResponseStatus status);
+  void sendResponse(const std::vector<std::byte> &responseData);
+  void sendResponse(std::vector<std::byte> &&responseData);
 
  protected:
   bool _privateT;
@@ -132,7 +132,7 @@ class HttpResponse_private : public HttpResponse
     _privateT = true;
   }
 
-  signal<std::vector<uint8_t>> readyToWrite;
+  signal<std::vector<std::byte>> readyToWrite;
 };
 }
 

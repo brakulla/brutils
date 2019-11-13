@@ -67,15 +67,15 @@ class TcpSocket : public br_object
   bool connect(std::string address, uint16_t port);
   bool disconnect();
 
-  std::vector<uint8_t> read();
-  bool write(const std::vector<uint8_t> &input);
+  std::vector<std::byte> read();
+  bool write(const std::vector<std::byte> &input);
   bool readFromSocket();
 
  private:
   ConnectionStatus _connectionStatus;
   TcpError _lastError;
   uint64_t _readBufferSize;
-  std::vector<uint8_t> _dataBuffer;
+  std::vector<std::byte> _dataBuffer;
   int _socketD;
 
   mutable std::recursive_mutex _mutex;

@@ -40,7 +40,7 @@ std::map<std::string, std::string> HttpRequest::queryMap() const
 {
   return _query;
 }
-std::vector<uint8_t> HttpRequest::rawBody() const
+std::vector<std::byte> HttpRequest::rawBody() const
 {
   return _rawBody;
 }
@@ -81,7 +81,7 @@ void HttpServer_private::HttpRequest_private::setQuery(const std::map<std::strin
 {
   _query = query;
 }
-void HttpServer_private::HttpRequest_private::setRawBody(const std::vector<uint8_t> &rawBody)
+void HttpServer_private::HttpRequest_private::setRawBody(const std::vector<std::byte> &rawBody)
 {
   _rawBody = rawBody;
 }

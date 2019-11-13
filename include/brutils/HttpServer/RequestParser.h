@@ -34,15 +34,15 @@ class RequestParser
 
   // sync api (should be called until there is no request, even if there is no new data, since there can be multiple requests in the received data)
  public:
-  virtual std::shared_ptr<HttpRequest> newIncomingData(std::vector<uint8_t> &data) = 0;
+  virtual std::shared_ptr<HttpRequest> newIncomingData(std::vector<std::byte> &data) = 0;
 
   // async api
  public:
   signal<std::shared_ptr<HttpRequest>> newRequestReady;
   signal<ParseError> errorOccured;
-  slot<std::vector<uint8_t>> newData;
+  slot<std::vector<std::byte>> newData;
  protected:
-  virtual void newDataReceived_slot(std::vector<uint8_t> &data) = 0;
+  virtual void newDataReceived_slot(std::vector<std::byte> &data) = 0;
 
 };
 
@@ -53,33 +53,33 @@ class RequestParser_v1x : public RequestParser
   ~RequestParser_v1x() override = default;
 
  public:
-  std::shared_ptr<HttpRequest> newIncomingData(std::vector<uint8_t> &data) override;
+  std::shared_ptr<HttpRequest> newIncomingData(std::vector<std::byte> &data) override;
 
  protected:
-  void newDataReceived_slot(std::vector<uint8_t> &data) override;
+  void newDataReceived_slot(std::vector<std::byte> &data) override;
 
  public:
   // root parse function
   bool parse();
   // first level parse functions
-  bool parseRequestLine(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
-  bool parseHeader(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
-  bool parseBody(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end, uint64_t contentSize);
+  bool parseRequestLine(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
+  bool parseHeader(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
+  bool parseBody(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end, uint64_t contentSize);
   // second level parse functions
-  bool parseMethod(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
-  bool parsePathAndQuery(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
-  bool parseVersion(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
+  bool parseMethod(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
+  bool parsePathAndQuery(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
+  bool parseVersion(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
   // third level parse functions
-  bool parsePath(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
-  bool parseQuery(std::vector<uint8_t>::const_iterator &pos, std::vector<uint8_t>::const_iterator &end);
+  bool parsePath(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
+  bool parseQuery(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
 
  private:
-  std::vector<uint8_t > _buffer;
+  std::vector<std::byte > _buffer;
   std::shared_ptr<HttpRequest> _requestInProduction;
-  const std::map<std::vector<uint8_t>, HttpRequestMethod> _methodMap;
-  const std::map<std::vector<uint8_t>, HttpConnectionVersion> _versionMap;
-  const std::vector<uint8_t> _newLine;
-  const std::vector<uint8_t> _emptySpace;
+  const std::map<std::vector<std::byte>, HttpRequestMethod> _methodMap;
+  const std::map<std::vector<std::byte>, HttpConnectionVersion> _versionMap;
+  const std::vector<std::byte> _newLine;
+  const std::vector<std::byte> _emptySpace;
 
   enum ParsingStatus {
     REQUEST_LINE,

@@ -29,14 +29,14 @@ class HttpConnection : public br_object
   slot<> tcpSocketDisconnected;
   slot<ParseError> parseErrorOccured;
   slot<std::shared_ptr<HttpRequest>> newRequestAvailable;
-  slot<std::vector<uint8_t>> responseReadyToSend;
+  slot<std::vector<std::byte>> responseReadyToSend;
 
  private:
   void tcpErrorOccured_slot(TcpError error);
   void tcpSocketDisconnected_slot();
   void parseErrorOccured_slot(ParseError error);
   void newRequestAvailable_slot(std::shared_ptr<HttpRequest> request);
-  void responseReady_slot(std::vector<uint8_t> data);
+  void responseReady_slot(std::vector<std::byte> data);
 
   std::shared_ptr<HttpResponse> createResponse(std::shared_ptr<HttpRequest> request);
 

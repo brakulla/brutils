@@ -268,14 +268,14 @@ bool TcpSocket::disconnect()
 
   return true;
 }
-std::vector<uint8_t> TcpSocket::read()
+std::vector<std::byte> TcpSocket::read()
 {
   std::scoped_lock lock(_mutex);
   // if standalone
   //  readFromSocket
   // if not
   //  return buffer
-  std::vector<uint8_t> content(_dataBuffer);
+  std::vector<std::byte> content(_dataBuffer);
   _dataBuffer.clear();
   return content;
 }
@@ -290,7 +290,7 @@ bool TcpSocket::readFromSocket()
     return false;
   }
 
-  uint8_t incomingData[INCOMING_DATA_SIZE];
+  std::byte incomingData[INCOMING_DATA_SIZE];
   ssize_t totalReceivedSize = 0;
   ssize_t incomingDataSize;
   do {
@@ -329,7 +329,7 @@ bool TcpSocket::readFromSocket()
   }
   return true;
 }
-bool TcpSocket::write(const std::vector<uint8_t> &input)
+bool TcpSocket::write(const std::vector<std::byte> &input)
 {
   std::scoped_lock lock(_mutex);
   if (ConnectionStatus::CONNECTED != connectionStatus()) {

@@ -63,7 +63,7 @@ void HttpConnection::newRequestAvailable_slot(std::shared_ptr<HttpRequest> reque
   // it's this class' job to provide response mechanism
   newRequestReady.emit(request, response); // this is the connection to the outer space
 }
-void HttpConnection::responseReady_slot(std::vector<uint8_t> data)
+void HttpConnection::responseReady_slot(std::vector<std::byte> data)
 {
   _tcpSocket->write(data);
 }

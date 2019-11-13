@@ -47,7 +47,7 @@ class HttpRequest : public br_object
   [[nodiscard]] std::string query(const std::string &key) const;
   [[nodiscard]] std::string query(std::string &&key) const;
   [[nodiscard]] std::map<std::string, std::string> queryMap() const;
-  [[nodiscard]] std::vector<uint8_t> rawBody() const;
+  [[nodiscard]] std::vector<std::byte> rawBody() const;
   [[nodiscard]] std::string header(const std::string &key) const;
   [[nodiscard]] std::string header(std::string &&key) const;
   [[nodiscard]] std::map<std::string, std::string> headerMap() const;
@@ -59,7 +59,7 @@ class HttpRequest : public br_object
   HttpConnectionVersion _version;
   std::string _path;
   std::map<std::string, std::string> _query;
-  std::vector<uint8_t> _rawBody; // TODO: implement different meaningful versions of body based on content-type
+  std::vector<std::byte> _rawBody; // TODO: implement different meaningful versions of body based on content-type
   std::map<std::string, std::string> _headers;
 
 };
@@ -78,7 +78,7 @@ class HttpRequest_private : public HttpRequest
   void setVersion(HttpConnectionVersion version);
   void setPath(const std::string &path);
   void setQuery(const std::map<std::string, std::string> &query);
-  void setRawBody(const std::vector<uint8_t> &rawBody);
+  void setRawBody(const std::vector<std::byte> &rawBody);
   void insertHeader(const std::string &key, const std::string &value);
 };
 }

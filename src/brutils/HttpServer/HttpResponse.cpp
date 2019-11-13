@@ -137,43 +137,43 @@ void HttpResponse::send()
 void HttpResponse::send(const std::string &content, const std::string &contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<uint8_t> data(content.begin(), content.end());
+  std::vector<std::byte> data(content.begin(), content.end());
   sendResponse(data);
 }
 void HttpResponse::send(std::string &&content, const std::string &contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<uint8_t> data(content.begin(), content.end());
+  std::vector<std::byte> data(content.begin(), content.end());
   sendResponse(data);
 }
 void HttpResponse::send(const std::string &content, std::string &&contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<uint8_t> data(content.begin(), content.end());
+  std::vector<std::byte> data(content.begin(), content.end());
   sendResponse(data);
 }
 void HttpResponse::send(std::string &&content, std::string &&contentType)
 {
   _headerMap["content-type"] = contentType;
-  std::vector<uint8_t> data(content.begin(), content.end());
+  std::vector<std::byte> data(content.begin(), content.end());
   sendResponse(data);
 }
-void HttpResponse::send(const std::vector<uint8_t> &content, const std::string &contentType)
+void HttpResponse::send(const std::vector<std::byte> &content, const std::string &contentType)
 {
   _headerMap["content-type"] = contentType;
   sendResponse(content);
 }
-void HttpResponse::send(std::vector<uint8_t> &&content, const std::string &contentType)
+void HttpResponse::send(std::vector<std::byte> &&content, const std::string &contentType)
 {
   _headerMap["content-type"] = contentType;
   sendResponse(content);
 }
-void HttpResponse::send(const std::vector<uint8_t> &content, std::string &&contentType)
+void HttpResponse::send(const std::vector<std::byte> &content, std::string &&contentType)
 {
   _headerMap["content-type"] = contentType;
   sendResponse(content);
 }
-void HttpResponse::send(std::vector<uint8_t> &&content, std::string &&contentType)
+void HttpResponse::send(std::vector<std::byte> &&content, std::string &&contentType)
 {
   _headerMap["content-type"] = contentType;
   sendResponse(content);
@@ -181,13 +181,13 @@ void HttpResponse::send(std::vector<uint8_t> &&content, std::string &&contentTyp
 void HttpResponse::sendJson(const variant &map)
 {
   auto json = json_generator::generate(map);
-  std::vector<uint8_t> jsonData(json.begin(), json.end());
+  std::vector<std::byte> jsonData(json.begin(), json.end());
   sendResponse(std::move(jsonData));
 }
 void HttpResponse::sendJson(variant &&map)
 {
   auto json = json_generator::generate(map);
-  std::vector<uint8_t> jsonData(json.begin(), json.end());
+  std::vector<std::byte> jsonData(json.begin(), json.end());
   sendResponse(std::move(jsonData));
 }
 void HttpResponse::sendXml(const variant &map)
@@ -206,13 +206,13 @@ void HttpResponse::sendFile(std::filesystem::path &&filePath)
 {
   // TODO: implement with a safe guard mechanism to prevent access to unauth folders
 }
-void HttpResponse::sendResponse(const std::vector<uint8_t> &responseData)
+void HttpResponse::sendResponse(const std::vector<std::byte> &responseData)
 {
   if (UNKNOWN_VERSION == _version) {
     _version = HTTP_11;
   }
 
-  std::vector<uint8_t> response;
+  std::vector<std::byte> response;
 
   // response status line
   response.insert(response.end(), _versionMap.at(_version).begin(), _versionMap.at(_version).end());
@@ -238,13 +238,13 @@ void HttpResponse::sendResponse(const std::vector<uint8_t> &responseData)
     ((HttpServer_private::HttpResponse_private*)this)->readyToWrite.emit(response);
   }
 }
-void HttpResponse::sendResponse(std::vector<uint8_t> &&responseData)
+void HttpResponse::sendResponse(std::vector<std::byte> &&responseData)
 {
   if (UNKNOWN_VERSION == _version) {
     _version = HTTP_11;
   }
 
-  std::vector<uint8_t> response;
+  std::vector<std::byte> response;
 
   // response status line
   response.insert(response.end(), _versionMap.at(_version).begin(), _versionMap.at(_version).end());
@@ -270,9 +270,9 @@ void HttpResponse::sendResponse(std::vector<uint8_t> &&responseData)
     ((HttpServer_private::HttpResponse_private*)this)->readyToWrite.emit(response);
   }
 }
-std::vector<uint8_t> HttpResponse::convertHttpResponseStatusToVector(HttpResponseStatus status)
+std::vector<std::byte> HttpResponse::convertHttpResponseStatusToVector(HttpResponseStatus status)
 {
   std::string statusStr = std::to_string((int)status);
-  std::vector<uint8_t> statusVec(statusStr.begin(), statusStr.end());
+  std::vector<std::byte> statusVec(statusStr.begin(), statusStr.end());
   return statusVec;
 }
