@@ -15,30 +15,25 @@ class byte_array
 {
  public:
   byte_array();
-  byte_array(const byte_array &byte_other);
-  byte_array(byte_array &&other);
-  byte_array(std::size_t size);
+  byte_array(const byte_array &other);
+  byte_array(byte_array &&other) noexcept;
+  explicit byte_array(std::size_t size);
   byte_array(std::size_t size, std::byte byte);
   byte_array(std::size_t size, char byte);
-  byte_array(const char *data, std::size_t size = -1);
+  explicit byte_array(const char *data, std::size_t size = -1);
 
-  byte_array& operator=(const byte_array &other);
-  byte_array& operator=(byte_array &&other);
-
-  ~byte_array();
-
-  byte_array &append(const byte_array &byteArray);
+  byte_array &append(const byte_array &ba);
   byte_array &append(char c);
   byte_array &append(int count, char c);
   byte_array &append(const char *str);
   byte_array &append(const char *str, std::size_t len);
   byte_array &append(const std::string &str);
 
-  byte_array &insert(size_t i, const byte_array &ba);
-  byte_array &insert(size_t i, char c);
-  byte_array &insert(size_t i, const std::string &str);
-  byte_array &insert(size_t i, const char *str);
-  byte_array &insert(size_t i, const char *str, size_t len);
+  byte_array &insert(size_t pos, const byte_array &ba);
+  byte_array &insert(size_t pos, char c);
+  byte_array &insert(size_t pos, const std::string &str);
+  byte_array &insert(size_t pos, const char *str);
+  byte_array &insert(size_t pos, const char *str, size_t len);
 
   void push_back(const byte_array &ba);
   void push_back(char c);
@@ -100,15 +95,13 @@ class byte_array
   byte_array toLower() const;
   byte_array toUpper() const;
 
-  class iterator
+  friend void swap(byte_array& first, byte_array& second)
   {
+    std::swap(first._byteVector, second._byteVector);
+  }
 
-  };
-
-  class const_iterator
-  {
-
-  };
+ private:
+  std::vector<std::byte> _byteVector;
 };
 
 }
