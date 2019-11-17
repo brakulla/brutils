@@ -14,24 +14,34 @@ HttpConnection::HttpConnection(bool upgradeProtocolInUnsecureConnection,
                                br_object *parent) :
     br_object(parent),
     newRequestReady(parent),
-    tcpErrorOccured(parent),
-    tcpSocketDisconnected(parent),
-    parseErrorOccured(parent),
-    newRequestAvailable(parent),
+    tcp_errorOccured(parent),
+    tcp_disconnected(parent),
+    tcp_dataReceived(parent),
+    parser_errorOccured(parent),
+    parser_newRequest(parent),
     responseReadyToSend(parent),
     _upgradeProtocolInUnsecureConnection(upgradeProtocolInUnsecureConnection),
     _tcpSocket(tcpSocket)
 {
-  tcpErrorOccured.setSlotFunction(
-      std::bind(&HttpConnection::tcpErrorOccured_slot, this, std::placeholders::_1));
-  tcpSocketDisconnected.setSlotFunction(
-      std::bind(&HttpConnection::tcpSocketDisconnected_slot, this));
-  parseErrorOccured.setSlotFunction(
+  tcp_errorOccured.setSlotFunction(
+      std::bind(&HttpConnection::tcp_errorOccured_slot, this, std::placeholders::_1));
+  tcp_disconnected.setSlotFunction(
+      std::bind(&HttpConnection::tcp_disconnected_slot, this));
+  tcp_dataReceived.setSlotFunction(
+      std::bind(&HttpConnection::tcp_dataReceived_slot, this));
+  parser_errorOccured.setSlotFunction(
       std::bind(&HttpConnection::parseErrorOccured_slot, this, std::placeholders::_1));
-  newRequestAvailable.setSlotFunction(
+  parser_newRequest.setSlotFunction(
       std::bind(&HttpConnection::newRequestAvailable_slot, this, std::placeholders::_1));
   responseReadyToSend.setSlotFunction(
       std::bind(&HttpConnection::responseReady_slot, this, std::placeholders::_1));
+
+  _tcpSocket->errorOccurred.connect(tcp_errorOccured);
+  _tcpSocket->disconnected.connect(tcp_disconnected);
+  _tcpSocket->dataReady.connect(tcp_dataReceived);
+
+  _parser->errorOccured.connect(parser_errorOccured);
+  _parser->newRequestReady.connect(parser_newRequest);
 }
 HttpConnection::~HttpConnection()
 {
@@ -39,13 +49,17 @@ HttpConnection::~HttpConnection()
     _tcpSocket->disconnect();
   }
 }
-void HttpConnection::tcpErrorOccured_slot(brutils::TcpError error)
+void HttpConnection::tcp_errorOccured_slot(brutils::TcpError error)
 {
   // TODO: if tcp error is critical, then self shut this connection
 }
-void HttpConnection::tcpSocketDisconnected_slot()
+void HttpConnection::tcp_disconnected_slot()
 {
   // TODO: when tcp socket is disconnected, self shut this connection
+}
+void HttpConnection::tcp_dataReceived_slot()
+{
+  // TODO: read all data, forward it to request parser
 }
 void HttpConnection::parseErrorOccured_slot(brutils::ParseError error)
 {

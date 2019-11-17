@@ -25,15 +25,21 @@ class HttpConnection : public br_object
   signal<std::shared_ptr<HttpRequest>, std::shared_ptr<HttpResponse>> newRequestReady;
 
  private: // private slots
-  slot<TcpError> tcpErrorOccured;
-  slot<> tcpSocketDisconnected;
-  slot<ParseError> parseErrorOccured;
-  slot<std::shared_ptr<HttpRequest>> newRequestAvailable;
+  // tcp socket connections
+  slot<TcpError> tcp_errorOccured;
+  slot<> tcp_disconnected;
+  slot<> tcp_dataReceived;
+
+  // request parser connections
+  slot<ParseError> parser_errorOccured;
+  slot<std::shared_ptr<HttpRequest>> parser_newRequest;
   slot<std::vector<std::byte>> responseReadyToSend;
 
  private:
-  void tcpErrorOccured_slot(TcpError error);
-  void tcpSocketDisconnected_slot();
+  void tcp_errorOccured_slot(TcpError error);
+  void tcp_disconnected_slot();
+  void tcp_dataReceived_slot();
+
   void parseErrorOccured_slot(ParseError error);
   void newRequestAvailable_slot(std::shared_ptr<HttpRequest> request);
   void responseReady_slot(std::vector<std::byte> data);
