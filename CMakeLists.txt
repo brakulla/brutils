@@ -34,8 +34,6 @@ else ()
             src/brutils/TcpServer/TcpServer.cpp
             include/brutils/timers/combined_timer.h
             src/brutils/timers/combined_timer.cpp
-            include/brutils/byte_array.h
-            src/brutils/byte_array.cpp
             include/brutils/timers/timer.h
             include/brutils/queue_pc.h
             include/brutils/string_utils.h

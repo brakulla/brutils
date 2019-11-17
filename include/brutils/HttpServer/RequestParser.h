@@ -73,6 +73,8 @@ class RequestParser_v1x : public RequestParser
   bool parsePath(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
   bool parseQuery(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
 
+  std::string getString(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end);
+
  private:
   std::vector<std::byte > _buffer;
   std::shared_ptr<HttpRequest> _requestInProduction;

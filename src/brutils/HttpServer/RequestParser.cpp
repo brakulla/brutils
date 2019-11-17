@@ -17,8 +17,8 @@ RequestParser_v1x::RequestParser_v1x(br_object *parent) :
                    {{std::byte{'T'}, std::byte{'R'}, std::byte{'A'}, std::byte{'C'}, std::byte{'E'}}, TRACE}
                }),
     _versionMap({
-                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'0'}}, HTTP_10},
-                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'1'}}, HTTP_11}
+                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'0'}}, HttpConnectionVersion::HTTP_10},
+                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'1'}}, HttpConnectionVersion::HTTP_11}
                 }),
     _newLine({{std::byte{'\r'}, std::byte{'\n'}}}),
     _emptySpace({std::byte{' '}})
@@ -153,17 +153,17 @@ bool RequestParser_v1x::parseHeader(std::vector<std::byte>::const_iterator &pos,
       std::advance(pos, 2); // progress position by two characters to reach to the next line
       return true;
     }
-    auto keyEndPos = std::find(pos, lineEndPos, ':');
+    auto keyEndPos = std::find(pos, lineEndPos, std::byte(':'));
     if (keyEndPos == lineEndPos) { // ':' not found
       return false;
     }
-    std::string key(pos, keyEndPos);
+    std::string key = getString(pos, keyEndPos);
     pos = keyEndPos;
     std::advance(pos, 1); // advance ahead of ':'
-    auto valueStart = std::find_if(pos, lineEndPos, [] (std::byte el) {
-      return el != ' ';
+    auto valueStart = std::find_if(pos, lineEndPos, [] (const std::byte el) {
+      return el != std::byte(' ');
     });
-    std::string value(valueStart, lineEndPos);
+    std::string value = getString(valueStart, lineEndPos);
     pos = lineEndPos;
     std::advance(pos, 2); // advance ahead of "\r\n"
     std::static_pointer_cast<HttpServer_private::HttpRequest_private>(
@@ -189,7 +189,7 @@ bool RequestParser_v1x::parseBody(std::vector<std::byte>::const_iterator &pos,
 bool RequestParser_v1x::parseMethod(std::vector<std::byte>::const_iterator &pos,
                                     std::vector<std::byte>::const_iterator &end)
 {
-  auto methodEndPos = std::find(pos, end, ' '); // find next empty space to separate method
+  auto methodEndPos = std::find(pos, end, std::byte(' ')); // find next empty space to separate method
   if (methodEndPos == end) { // we couldn't find empty space, something wrong
     return false;
   }
@@ -210,11 +210,11 @@ bool RequestParser_v1x::parseMethod(std::vector<std::byte>::const_iterator &pos,
 }
 bool RequestParser_v1x::parsePathAndQuery(std::vector<std::byte>::const_iterator &pos, std::vector<std::byte>::const_iterator &end)
 {
-  auto uriEndPos = std::find(pos, end, ' ');
+  auto uriEndPos = std::find(pos, end, std::byte(' '));
   if (uriEndPos == end) {
     return false;
   }
-  auto queryStartPos = std::find(pos, uriEndPos, '?');
+  auto queryStartPos = std::find(pos, uriEndPos, std::byte('?'));
   if (queryStartPos == uriEndPos) {
     parsePath(pos, uriEndPos);
   } else {
@@ -232,14 +232,14 @@ bool RequestParser_v1x::parseVersion(std::vector<std::byte>::const_iterator &pos
                                      std::vector<std::byte>::const_iterator &end)
 {
   // read http version, this time, we read until the end of the line
-  HttpConnectionVersion version = UNKNOWN_VERSION;
+  HttpConnectionVersion version = HttpConnectionVersion::UNKNOWN;
   for (auto &el: _versionMap) {
     if (std::equal(pos, end, el.first.cbegin(), el.first.cend())) {
       version = el.second;
       break;
     }
   }
-  if (UNKNOWN_VERSION == version) {
+  if (HttpConnectionVersion::UNKNOWN == version) {
     return false;
   }
   pos = end;
@@ -252,7 +252,7 @@ bool RequestParser_v1x::parsePath(std::vector<std::byte>::const_iterator &pos,
   if (0 >= std::distance(pos, end)) {
     return false;
   }
-  std::string path(pos, end);
+  std::string path = getString(pos, end);
   pos = end;
   std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setPath(path);
   return true;
@@ -262,18 +262,27 @@ bool RequestParser_v1x::parseQuery(std::vector<std::byte>::const_iterator &pos,
 {
   std::map<std::string, std::string> query;
   while(0 < std::distance(pos, end)) {
-    auto pairEndPos = std::find(pos, end, '&');
-    auto keyEndPos = std::find(pos, pairEndPos, '=');
+    auto pairEndPos = std::find(pos, end, std::byte('&'));
+    auto keyEndPos = std::find(pos, pairEndPos, std::byte('='));
     if (keyEndPos == pairEndPos) {
-      query.emplace(std::string(pos, pairEndPos), "");
+      query.emplace(getString(pos, pairEndPos), "");
     } else {
       auto valueStartPos = keyEndPos;
       std::advance(valueStartPos, 1);
-      query.emplace(std::string(pos, keyEndPos), std::string(valueStartPos, pairEndPos));
+      query.emplace(getString(pos, keyEndPos), getString(valueStartPos, pairEndPos));
     }
     pos = pairEndPos;
     std::advance(pos, 1); // advance ahead of '&' or '='
   }
   std::static_pointer_cast<HttpServer_private::HttpRequest_private>(_requestInProduction)->setQuery(query);
   return true;
+}
+std::string RequestParser_v1x::getString(std::vector<std::byte>::const_iterator &pos,
+                                         std::vector<std::byte>::const_iterator &end)
+{
+  std::string result;
+  std::transform(pos, end, result.end(), [] (const std::byte& el) {
+    return static_cast<unsigned char>(el);
+  });
+  return result;
 }
