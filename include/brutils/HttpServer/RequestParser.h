@@ -78,8 +78,8 @@ class RequestParser_v1x : public RequestParser
  private:
   std::vector<std::byte > _buffer;
   std::shared_ptr<HttpRequest> _requestInProduction;
-  const std::map<std::vector<std::byte>, HttpRequestMethod> _methodMap;
-  const std::map<std::vector<std::byte>, HttpConnectionVersion> _versionMap;
+  const std::map<std::vector<std::byte>, HttpMethod> _methodMap;
+  const std::map<std::vector<std::byte>, HttpVersion> _versionMap;
   const std::vector<std::byte> _newLine;
   const std::vector<std::byte> _emptySpace;
 

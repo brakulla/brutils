@@ -12,15 +12,15 @@ using namespace brutils;
 HttpRequest::HttpRequest(br_object *parent) :
     br_object(parent),
     _method(UNKNOWN_METHOD),
-    _version(HttpConnectionVersion::UNKNOWN)
+    _version(HttpVersion::UNKNOWN)
 {
 
 }
-HttpRequestMethod HttpRequest::method() const
+HttpMethod HttpRequest::method() const
 {
   return _method;
 }
-HttpConnectionVersion HttpRequest::connectionVersion() const
+HttpVersion HttpRequest::connectionVersion() const
 {
   return _version;
 }
@@ -34,7 +34,7 @@ std::string HttpRequest::query(const std::string &key) const
 }
 std::string HttpRequest::query(std::string &&key) const
 {
-  return _query.at(toLower(key));
+  return query(key);
 }
 std::map<std::string, std::string> HttpRequest::queryMap() const
 {
@@ -50,7 +50,7 @@ std::string HttpRequest::header(const std::string &key) const
 }
 std::string HttpRequest::header(std::string &&key) const
 {
-  return _headers.at(toLower(key));
+  return header(key);
 }
 std::map<std::string, std::string> HttpRequest::headerMap() const
 {
@@ -65,11 +65,11 @@ variant HttpRequest::bodyXml() const
 {
   return brutils::variant();
 }
-void HttpServer_private::HttpRequest_private::setMethod(HttpRequestMethod method)
+void HttpServer_private::HttpRequest_private::setMethod(HttpMethod method)
 {
   _method = method;
 }
-void HttpServer_private::HttpRequest_private::setVersion(HttpConnectionVersion version)
+void HttpServer_private::HttpRequest_private::setVersion(HttpVersion version)
 {
   _version = version;
 }

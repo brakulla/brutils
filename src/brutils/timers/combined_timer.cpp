@@ -20,11 +20,11 @@ int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
 {
   stop();
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-  Timer_s timerStruct{false,
-                      periodic,
-                      _lastTimerId,
-                      duration_ms,
-                      (now + std::chrono::milliseconds(duration_ms))};
+  TimerData_s timerStruct{false,
+                          periodic,
+                          _lastTimerId,
+                          duration_ms,
+                          (now + std::chrono::milliseconds(duration_ms))};
   ++_lastTimerId;
 
   _timeKeeperMap[timerStruct.id] = timerStruct;
@@ -58,7 +58,7 @@ void brutils::combined_timer::stop()
 void brutils::combined_timer::run()
 {
   int16_t closestTimerId = getClosestTimerId();
-  Timer_s closestTimer = _timeKeeperMap.at(closestTimerId);
+  TimerData_s closestTimer = _timeKeeperMap.at(closestTimerId);
   while (!_stopped) {
     std::unique_lock lock(_mutex);
     _condVariable.wait_until(lock, closestTimer.expirationDate, [&] {

@@ -11,7 +11,7 @@
 namespace brutils
 {
 
-enum HttpRequestMethod
+enum HttpMethod
 {
   GET,
   HEAD,
@@ -25,7 +25,7 @@ enum HttpRequestMethod
   UNKNOWN_METHOD
 };
 
-enum class HttpConnectionVersion
+enum class HttpVersion
 {
   HTTP_10,
   HTTP_11,
@@ -41,8 +41,8 @@ class HttpRequest : public br_object
   ~HttpRequest() override = default;
 
  public:
-  [[nodiscard]] HttpRequestMethod method() const;
-  [[nodiscard]] HttpConnectionVersion connectionVersion() const;
+  [[nodiscard]] HttpMethod method() const;
+  [[nodiscard]] HttpVersion connectionVersion() const;
   [[nodiscard]] std::string path() const;
   [[nodiscard]] std::string query(const std::string &key) const;
   [[nodiscard]] std::string query(std::string &&key) const;
@@ -55,8 +55,8 @@ class HttpRequest : public br_object
   [[nodiscard]] variant bodyXml() const;
 
  protected:
-  HttpRequestMethod _method;
-  HttpConnectionVersion _version;
+  HttpMethod _method;
+  HttpVersion _version;
   std::string _path;
   std::map<std::string, std::string> _query;
   std::vector<std::byte> _rawBody; // TODO: implement different meaningful versions of body based on content-type
@@ -74,8 +74,8 @@ class HttpRequest_private : public HttpRequest
   ~HttpRequest_private() override = default;
 
  public:
-  void setMethod(HttpRequestMethod method);
-  void setVersion(HttpConnectionVersion version);
+  void setMethod(HttpMethod method);
+  void setVersion(HttpVersion version);
   void setPath(const std::string &path);
   void setQuery(const std::map<std::string, std::string> &query);
   void setRawBody(const std::vector<std::byte> &rawBody);

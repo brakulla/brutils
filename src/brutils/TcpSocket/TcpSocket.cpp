@@ -17,43 +17,16 @@ using namespace brutils;
 #define INCOMING_DATA_SIZE 1024
 
 TcpSocket::TcpSocket(br_object *parent) :
-    br_object(parent),
-    connected(parent),
-    disconnected(parent),
-    dataReady(parent),
-    errorOccurred(parent),
-    destroyed(parent),
-    _readBufferSize(DEFAULT_READ_BUFFER_SIZE),
-    _socketD(-1),
-    _connectionStatus(ConnectionStatus::NOT_CONNECTED)
+    TcpSocket(-1, ConnectionStatus::NOT_CONNECTED, DEFAULT_READ_BUFFER_SIZE, parent)
 {
-  setReadBufferSize(_readBufferSize);
 }
 TcpSocket::TcpSocket(uint64_t readBufferSize, br_object *parent) :
-    br_object(parent),
-    connected(parent),
-    disconnected(parent),
-    dataReady(parent),
-    errorOccurred(parent),
-    destroyed(parent),
-    _readBufferSize(readBufferSize),
-    _socketD(-1),
-    _connectionStatus(ConnectionStatus::NOT_CONNECTED)
+    TcpSocket(-1, ConnectionStatus::NOT_CONNECTED, readBufferSize, parent)
 {
-  setReadBufferSize(readBufferSize);
 }
 TcpSocket::TcpSocket(int socketDescriptor, ConnectionStatus status, br_object *parent) :
-    br_object(parent),
-    connected(parent),
-    disconnected(parent),
-    dataReady(parent),
-    errorOccurred(parent),
-    destroyed(parent),
-    _readBufferSize(DEFAULT_READ_BUFFER_SIZE),
-    _socketD(socketDescriptor),
-    _connectionStatus(status)
+    TcpSocket(socketDescriptor, status, DEFAULT_READ_BUFFER_SIZE, parent)
 {
-  setReadBufferSize(_readBufferSize);
 }
 TcpSocket::TcpSocket(int socketDescriptor, ConnectionStatus status, uint64_t readBufferSize, br_object *parent) :
     br_object(parent),
@@ -151,11 +124,7 @@ bool TcpSocket::setReadBufferSize(const uint64_t readBufferSize)
     return false;
   }
 
-  if (_dataBuffer.max_size() < readBufferSize) {
-    _readBufferSize = _dataBuffer.max_size();
-  } else {
-    _readBufferSize = readBufferSize;
-  }
+  _readBufferSize = std::min(_dataBuffer.max_size(), readBufferSize);
   _dataBuffer.reserve(_readBufferSize);
 
   return true;

@@ -33,7 +33,7 @@ class combined_timer : br_object
   int16_t getClosestTimerId();
 
  private:
-  struct Timer_s {
+  struct TimerData_s {
     bool running = false;
     bool periodic = false;
     int16_t id = -1;
@@ -43,7 +43,7 @@ class combined_timer : br_object
 
  private:
   int16_t _lastTimerId;
-  std::map<int16_t, Timer_s> _timeKeeperMap;
+  std::map<int16_t, TimerData_s> _timeKeeperMap;
 
   std::atomic_bool _stopped;
   std::mutex _mutex;

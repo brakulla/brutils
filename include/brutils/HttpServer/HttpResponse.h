@@ -13,9 +13,10 @@
 namespace brutils
 {
 
-enum HttpResponseStatus {
+enum HttpResponseStatus
+{
   // TODO: implement the logic for internal status codes (rfc-7231)
-  HTTP_STATUS_CONTINUE = 100,
+      HTTP_STATUS_CONTINUE = 100,
   HTTP_STATUS_SWITCHING_PROTOCOL = 101,
   HTTP_STATUS_OK = 200,
   HTTP_STATUS_CREATED = 201,
@@ -105,21 +106,23 @@ class HttpResponse : public br_object
   void sendFile(std::filesystem::path &&filePath);
 
  protected:
-  HttpConnectionVersion _version;
+  HttpVersion _version;
   HttpResponseStatus _status;
-  std::map<HttpResponseStatus, std::vector<std::byte>> _statusMessageMap;
-  std::map<HttpConnectionVersion, std::vector<std::byte>> _versionMap;
   std::map<std::string, std::string> _headerMap;
-  std::vector<std::byte> _newLine;
-  std::vector<std::byte> _headerSeparator;
 
   std::vector<std::byte> convertHttpResponseStatusToVector(HttpResponseStatus status);
   void sendResponse(const std::vector<std::byte> &responseData);
   void sendResponse(std::vector<std::byte> &&responseData);
-  std::vector<std::byte> convertStringToBytes(const std::string &data);
+  static std::vector<std::byte> convertStringToBytes(const std::string &data);
 
  protected:
   bool _privateT;
+
+ protected: // static const member variables
+  static const std::vector<std::byte> _newLine;
+  static const std::vector<std::byte> _headerSeparator;
+  static const std::map<HttpVersion, std::vector<std::byte>> _versionMap;
+  static const std::unordered_map<HttpResponseStatus, std::vector<std::byte>> _statusMessageMap;
 };
 
 namespace HttpServer_private {

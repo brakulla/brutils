@@ -17,8 +17,8 @@ RequestParser_v1x::RequestParser_v1x(br_object *parent) :
                    {{std::byte{'T'}, std::byte{'R'}, std::byte{'A'}, std::byte{'C'}, std::byte{'E'}}, TRACE}
                }),
     _versionMap({
-                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'0'}}, HttpConnectionVersion::HTTP_10},
-                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'1'}}, HttpConnectionVersion::HTTP_11}
+                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'0'}}, HttpVersion::HTTP_10},
+                    {{std::byte{'H'}, std::byte{'T'}, std::byte{'T'}, std::byte{'P'}, std::byte{'/'}, std::byte{'1'}, std::byte{'.'}, std::byte{'1'}}, HttpVersion::HTTP_11}
                 }),
     _newLine({{std::byte{'\r'}, std::byte{'\n'}}}),
     _emptySpace({std::byte{' '}})
@@ -193,7 +193,7 @@ bool RequestParser_v1x::parseMethod(std::vector<std::byte>::const_iterator &pos,
   if (methodEndPos == end) { // we couldn't find empty space, something wrong
     return false;
   }
-  HttpRequestMethod method = UNKNOWN_METHOD;
+  HttpMethod method = UNKNOWN_METHOD;
   for (auto &el: _methodMap) {
     if (std::equal(pos, methodEndPos, el.first.cbegin(), el.first.cend())) {
       method = el.second;
@@ -232,14 +232,14 @@ bool RequestParser_v1x::parseVersion(std::vector<std::byte>::const_iterator &pos
                                      std::vector<std::byte>::const_iterator &end)
 {
   // read http version, this time, we read until the end of the line
-  HttpConnectionVersion version = HttpConnectionVersion::UNKNOWN;
+  HttpVersion version = HttpVersion::UNKNOWN;
   for (auto &el: _versionMap) {
     if (std::equal(pos, end, el.first.cbegin(), el.first.cend())) {
       version = el.second;
       break;
     }
   }
-  if (HttpConnectionVersion::UNKNOWN == version) {
+  if (HttpVersion::UNKNOWN == version) {
     return false;
   }
   pos = end;
