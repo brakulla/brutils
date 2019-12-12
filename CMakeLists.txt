@@ -20,6 +20,8 @@ else ()
     include_directories(include)
     add_library(brutils STATIC
             main.cpp
+            include/brutils/Thread/Thread.h
+            src/brutils/Thread/Thread.cpp
             include/brutils/HttpServer/HttpResponse.h
             src/brutils/HttpServer/HttpResponse.cpp
             include/brutils/HttpServer/HttpRequest.h

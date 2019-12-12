@@ -73,7 +73,7 @@ void HttpConnection::newRequestAvailable_slot(std::shared_ptr<HttpRequest> reque
     response->send();
     return;
   }
-  // TODO: if upgrade to http 2 is requested in request object, put that logic here
+  // TODO: if upgrade to http 2 is requested in request object, put that logic here when it's implemented
   // it's this class' job to provide response mechanism
   newRequestReady.emit(request, response); // this is the connection to the outer space
 }
