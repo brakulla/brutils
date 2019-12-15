@@ -6,8 +6,10 @@
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPRESPONSE_H_
 
 #include <filesystem>
+
 #include "brutils/br_object.h"
 #include "brutils/variant.h"
+
 #include "HttpRequest.h"
 
 namespace brutils
@@ -16,7 +18,7 @@ namespace brutils
 enum HttpResponseStatus
 {
   // TODO: implement the logic for internal status codes (rfc-7231)
-      HTTP_STATUS_CONTINUE = 100,
+  HTTP_STATUS_CONTINUE = 100,
   HTTP_STATUS_SWITCHING_PROTOCOL = 101,
   HTTP_STATUS_OK = 200,
   HTTP_STATUS_CREATED = 201,
