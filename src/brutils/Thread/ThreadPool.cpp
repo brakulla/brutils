@@ -13,7 +13,7 @@ ThreadPool::ThreadPool(std::chrono::milliseconds idleThreadTimeout, std::size_t 
     _timerTimeout(this),
     _threadFinishedExecuting(this)
 {
-  _timerTimeout.setSlotFunction(std::bind(&ThreadPool::timeoutSlot, std::placeholders::_1));
+  _timerTimeout.setSlotFunction(std::bind(&ThreadPool::timeoutSlot, this, std::placeholders::_1));
   _threadFinishedExecuting.setSlotFunction(std::bind(&ThreadPool::executionFinished, this, std::placeholders::_1));
 
   _threadList.reserve(maxThreadSize);
@@ -27,7 +27,7 @@ void ThreadPool::execute(F &&function, Args &&... args)
   bool executed = false;
   for (auto &thread : _threadList) {
     if (thread) { // check if thread exists in the slot (deferences to std::unique_ptr<Thread>)
-      if (!thread->isBusy()) { // check if the thread is free to execute
+      if (!thread->isBusy()) {
         thread->execute(std::forward<F>(function), std::forward<Args>(args)...);
         executed = true;
         break;
@@ -40,9 +40,9 @@ void ThreadPool::execute(F &&function, Args &&... args)
       break;
     }
   }
-  if (!executed) {
+  if (!executed) { // if not executed, push it to queue to be executed when there is a free slot
     std::function<void()> f = std::bind(std::forward<F>(function), std::forward<Args>(args)...);
-    _functionBuffer.push_back(f);
+    _functionBuffer.push(f);
   }
 }
 void ThreadPool::timeoutSlot(int16_t timerId)
@@ -58,9 +58,18 @@ void ThreadPool::executionFinished(std::thread::id threadId)
 {
   for (auto& thread: _threadList) {
     if (thread->getThreadId() == threadId) {
-      // TODO: add chrono parametered overloading function to timer
-      int16_t timerId = _timer.addTimer(_timeoutDuration.count());
-      _timerThreadMap[timerId] = threadId;
+      if (!_functionBuffer.empty()) {
+        if (!thread->isBusy()) {
+          auto& front = _functionBuffer.front();
+          _functionBuffer.pop();
+          execute(front);
+        } else {
+          // this should not be happening, do something about it
+        }
+      } else {
+        int16_t timerId = _timer.addTimer(_timeoutDuration);
+        _timerThreadMap[timerId] = threadId;
+      }
       break;
     }
   }

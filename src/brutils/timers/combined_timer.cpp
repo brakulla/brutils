@@ -32,6 +32,10 @@ int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
   start();
   return timerStruct.id;
 }
+int16_t brutils::combined_timer::addTimer(std::chrono::milliseconds duration, bool periodic)
+{
+  return addTimer(duration.count(), periodic);
+}
 bool brutils::combined_timer::stopTimer(int16_t timerId)
 {
   if (_timeKeeperMap.end() == _timeKeeperMap.find(timerId)) {

@@ -35,7 +35,7 @@ namespace brutils
   std::chrono::milliseconds _timeoutDuration;
   size_t _maxThreadCount;
   std::vector<std::unique_ptr<Thread>> _threadList;
-  std::vector<std::function<void()>> _functionBuffer;
+  std::queue<std::function<void()>> _functionBuffer;
 
  private:
   combined_timer _timer;

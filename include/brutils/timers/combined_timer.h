@@ -21,6 +21,7 @@ class combined_timer : br_object
   ~combined_timer() override;
 
   int16_t addTimer(uint64_t duration_ms, bool periodic = false);
+  int16_t addTimer(std::chrono::milliseconds duration, bool periodic = false);
   bool stopTimer(int16_t timerId);
 
  public: // signals
