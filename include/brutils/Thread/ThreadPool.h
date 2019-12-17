@@ -15,13 +15,29 @@
 #include "brutils/br_object.h"
 
 #include <chrono>
+#include <unordered_map>
 
 #include "Thread.h"
 #include "brutils/timers/combined_timer.h"
 
 namespace brutils
 {
- class ThreadPool : public br_object
+
+enum class ThreadPoolErrorCode
+{
+  NoError = 0,
+  UnknownThreadId,
+  UnknownTimerId,
+  BusyThreadResource
+};
+
+struct ThreadPoolError
+{
+  ThreadPoolErrorCode errorCode;
+  std::string errorStr;
+};
+
+class ThreadPool : public br_object
 {
  public:
   explicit ThreadPool(std::chrono::milliseconds idleThreadTimeout = std::chrono::milliseconds(30000),
@@ -31,10 +47,13 @@ namespace brutils
   template <typename F, typename... Args, std::enable_if_t<std::is_invocable_v<F&&, Args&&...>, int> = 0>
   void execute(F&& function, Args&&... args);
 
+  signal<ThreadPoolError> errorOccured;
+  ThreadPoolError getError();
+
  private:
   std::chrono::milliseconds _timeoutDuration;
   size_t _maxThreadCount;
-  std::vector<std::unique_ptr<Thread>> _threadList;
+  std::unordered_map<std::thread::id, std::unique_ptr<Thread>> _threadList;
   std::queue<std::function<void()>> _functionBuffer;
 
  private:
@@ -45,6 +64,9 @@ namespace brutils
 
   slot<std::thread::id> _threadFinishedExecuting;
   void executionFinished(std::thread::id threadId);
+
+ private:
+  ThreadPoolError _error;
 };
 
 }
