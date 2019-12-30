@@ -48,22 +48,30 @@ class ThreadPool : public br_object
   void execute(F&& function, Args&&... args);
 
   signal<ThreadPoolError> errorOccured;
-  ThreadPoolError getError();
+  ThreadPoolError getLastError();
 
  private:
   std::chrono::milliseconds _timeoutDuration;
   size_t _maxThreadCount;
-  std::unordered_map<std::thread::id, std::unique_ptr<Thread>> _threadList;
   std::queue<std::function<void()>> _functionBuffer;
+
+  std::unordered_map<std::thread::id, int> _threadId_timerId_map;
+  std::unordered_map<int, std::thread::id> _timerId_threadId_map;
+  std::unordered_map<std::thread::id, std::unique_ptr<Thread>> _busyThreadMap;
+  std::unordered_map<std::thread::id, std::unique_ptr<Thread>> _idleThreadMap;
 
  private:
   combined_timer _timer;
-  slot<int16_t> _timerTimeout;
+  slot<int16_t> _timerTimeoutSlot;
   std::map<int16_t, std::thread::id> _timerThreadMap;
-  void timeoutSlot(int16_t timerId);
+  void timerTimeout_slotFunc(int16_t timerId);
 
-  slot<std::thread::id> _threadFinishedExecuting;
-  void executionFinished(std::thread::id threadId);
+  slot<std::thread::id> _threadExecutionFinishedSlot;
+  void executionFinished_slotFunc(std::thread::id finishedThreadId);
+
+  // utility functions
+  void startTimerByThreadId(const std::thread::id& threadId);
+  void stopTimerByThreadId(const std::thread::id& threadId);
 
  private:
   ThreadPoolError _error;
