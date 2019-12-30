@@ -4,6 +4,7 @@
 
 #include "brutils/HttpServer/HttpConnection.h"
 #include "brutils/time_utils.h"
+#include "brutils/string_utils.h"
 
 using namespace brutils;
 
@@ -14,6 +15,8 @@ HttpConnection::HttpConnection(bool upgradeProtocolInUnsecureConnection,
                                br_object *parent) :
     br_object(parent),
     newRequestReady(parent),
+    rawDataReceived(parent),
+    connectionClosed(parent),
     tcp_errorOccured(parent),
     tcp_disconnected(parent),
     tcp_dataReceived(parent),
@@ -21,7 +24,7 @@ HttpConnection::HttpConnection(bool upgradeProtocolInUnsecureConnection,
     parser_newRequest(parent),
     responseReadyToSend(parent),
     _upgradeProtocolInUnsecureConnection(upgradeProtocolInUnsecureConnection),
-    _tcpSocket(tcpSocket)
+    _tcpSocket(std::move(tcpSocket))
 {
   tcp_errorOccured.setSlotFunction(
       std::bind(&HttpConnection::tcp_errorOccured_slot, this, std::placeholders::_1));
@@ -36,10 +39,18 @@ HttpConnection::HttpConnection(bool upgradeProtocolInUnsecureConnection,
   responseReadyToSend.setSlotFunction(
       std::bind(&HttpConnection::responseReady_slot, this, std::placeholders::_1));
 
+  if (!_tcpSocket) {
+    // ERROR: CRITICAL PARAMETER ERROR
+    return;
+  }
+
   _tcpSocket->errorOccurred.connect(tcp_errorOccured);
   _tcpSocket->disconnected.connect(tcp_disconnected);
   _tcpSocket->dataReady.connect(tcp_dataReceived);
 
+  _parser = std::make_unique<RequestParser_v1x>(parent);
+
+  rawDataReceived.connect(_parser->newData);
   _parser->errorOccured.connect(parser_errorOccured);
   _parser->newRequestReady.connect(parser_newRequest);
 }
@@ -55,11 +66,14 @@ void HttpConnection::tcp_errorOccured_slot(brutils::TcpError error)
 }
 void HttpConnection::tcp_disconnected_slot()
 {
-  // TODO: when tcp socket is disconnected, self shut this connection
+  _tcpSocket.reset();
+  connectionClosed.emit();
 }
 void HttpConnection::tcp_dataReceived_slot()
 {
-  // TODO: read all data, forward it to request parser
+  std::vector<std::byte> rawData = _tcpSocket->read();
+  // TODO: if http2 connection, create htt2 request parser
+  rawDataReceived.emit(rawData);
 }
 void HttpConnection::parseErrorOccured_slot(brutils::ParseError error)
 {
@@ -69,6 +83,7 @@ void HttpConnection::newRequestAvailable_slot(std::shared_ptr<HttpRequest> reque
 {
   auto response = createResponse(request);
   if (HttpVersion::HTTP_11 != request->connectionVersion()) {
+    response->header("Connection", "close");
     response->status(HTTP_STATUS_VERSION_NOT_SUPPORTED);
     response->send();
     return;
@@ -88,6 +103,13 @@ std::shared_ptr<HttpResponse> HttpConnection::createResponse(std::shared_ptr<Htt
 
   response->header("date", getLocaltimeFormatted("%a, %d %m %Y %T %Z"));
   response->header("server", "brutils/cervpp");
+
+  std::string reqConnType = request->header("connection");
+  if (toLower(reqConnType) == "close") {
+    response->header("Connection", "close");
+  } else {
+    response->header("Connection", "keep-alive");
+  }
 
   // std::shared_ptr<HttpServer_private::HttpResponse_private> will be coverted to correct return value automatically
   return response;

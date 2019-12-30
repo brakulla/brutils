@@ -207,9 +207,8 @@ bool TcpSocket::disconnect()
     return false;
   }
 
-  int res;
   if (this->getThreadId() == std::this_thread::get_id()) {
-    res = ::close(_socketD);
+    int res = ::close(_socketD);
     if (0 != res) {
       int errNo = errno;
       _lastError.errorCode = TCP_ERROR_SYS_ERROR;
@@ -222,7 +221,7 @@ bool TcpSocket::disconnect()
     }
     _connectionStatus = ConnectionStatus::NOT_CONNECTED;
   } else {
-    res = ::shutdown(_socketD, SHUT_RDWR);
+    int res = ::shutdown(_socketD, SHUT_RDWR);
     if (0 != res) {
       int errNo = errno;
       _lastError.errorCode = TCP_ERROR_SYS_ERROR;

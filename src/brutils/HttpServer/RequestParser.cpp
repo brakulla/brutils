@@ -25,7 +25,7 @@ RequestParser_v1x::RequestParser_v1x(br_object *parent) :
 {
 
 }
-std::shared_ptr<HttpRequest> RequestParser_v1x::newIncomingData(std::vector<std::byte> &data)
+std::shared_ptr<HttpRequest> RequestParser_v1x::newIncomingData(const std::vector<std::byte> &data)
 {
   _buffer.insert(_buffer.end(), data.begin(), data.end());
   if (parse()) {
@@ -35,7 +35,7 @@ std::shared_ptr<HttpRequest> RequestParser_v1x::newIncomingData(std::vector<std:
   }
   return nullptr;
 }
-void RequestParser_v1x::newDataReceived_slot(std::vector<std::byte> &data)
+void RequestParser_v1x::newDataReceived_slot(const std::vector<std::byte> &data)
 {
   _buffer.insert(_buffer.end(), data.begin(), data.end());
   while (true) {

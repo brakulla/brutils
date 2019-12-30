@@ -34,7 +34,7 @@ class RequestParser
 
   // sync api (should be called until there is no request, even if there is no new data, since there can be multiple requests in the received data)
  public:
-  virtual std::shared_ptr<HttpRequest> newIncomingData(std::vector<std::byte> &data) = 0;
+  virtual std::shared_ptr<HttpRequest> newIncomingData(const std::vector<std::byte> &data) = 0;
 
   // async api
  public:
@@ -42,7 +42,7 @@ class RequestParser
   signal<ParseError> errorOccured;
   slot<std::vector<std::byte>> newData;
  protected:
-  virtual void newDataReceived_slot(std::vector<std::byte> &data) = 0;
+  virtual void newDataReceived_slot(const std::vector<std::byte> &data) = 0;
 
 };
 
@@ -53,10 +53,10 @@ class RequestParser_v1x : public RequestParser
   ~RequestParser_v1x() override = default;
 
  public:
-  std::shared_ptr<HttpRequest> newIncomingData(std::vector<std::byte> &data) override;
+  std::shared_ptr<HttpRequest> newIncomingData(const std::vector<std::byte> &data) override;
 
  protected:
-  void newDataReceived_slot(std::vector<std::byte> &data) override;
+  void newDataReceived_slot(const std::vector<std::byte> &data) override;
 
  public:
   // root parse function

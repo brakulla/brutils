@@ -1,6 +1,14 @@
-//
-// Created by Burak Ongay on 10/11/2019.
-//
+/**
+ * @file HttpConnection.h
+ * @class HttpConnection
+ *
+ * @brief Virtual HTTP Connection handler.
+ *
+ * The logic of HTTP connections are implemented in this class.
+ * If HTTP 1.1 version is used, then default "Connection" header is "keep-alive". If stated otherwise, this class
+ * will self-destruct after one request/response messaging.
+ * If HTTP 2.0 version is used, not implemented, yet.
+ */
 
 #ifndef BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPCONNECTION_H_
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPCONNECTION_H_
@@ -23,6 +31,8 @@ class HttpConnection : public br_object
 
  public: // signals
   signal<std::shared_ptr<HttpRequest>, std::shared_ptr<HttpResponse>> newRequestReady;
+  signal<std::vector<std::byte>> rawDataReceived;
+  signal<> connectionClosed;
 
  private: // private slots
   // tcp socket connections
