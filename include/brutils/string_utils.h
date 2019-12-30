@@ -72,6 +72,12 @@ static std::basic_string<CharT> toUpper(const std::basic_string<CharT> &input)
   });
   return upper;
 }
+static std::string str_threadIdToStr(const std::thread::id id)
+{
+  std::stringstream ss;
+  ss << id;
+  return ss.str();
+}
 }
 
 #endif //BRUTILS_STRING_UTILS_H
