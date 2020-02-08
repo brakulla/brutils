@@ -1,6 +1,8 @@
-//
-// Created by congay on 11/11/2019.
-//
+/**
+ * @file HttpResponse.h
+ *
+ * Description
+ */
 
 #ifndef BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPRESPONSE_H_
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPRESPONSE_H_

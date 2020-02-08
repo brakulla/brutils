@@ -1,6 +1,8 @@
-//
-// Created by Burak Ongay on 10/11/2019.
-//
+/**
+ * @file HttpRequest.cpp
+ *
+ * Description
+ */
 
 #include "brutils/HttpServer/HttpRequest.h"
 

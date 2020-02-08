@@ -1,6 +1,8 @@
-//
-// Created by congay on 12/12/2019.
-//
+/**
+ * @file Thread.cpp
+ *
+ * Description
+ */
 
 #include "brutils/Thread/Thread.h"
 

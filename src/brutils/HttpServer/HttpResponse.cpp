@@ -1,6 +1,8 @@
-//
-// Created by congay on 11/11/2019.
-//
+/**
+ * @file HttpResponse.cpp
+ *
+ * Description
+ */
 
 #include <brutils/json_generator.h>
 #include "brutils/HttpServer/HttpResponse.h"

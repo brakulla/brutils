@@ -1,6 +1,8 @@
-//
-// Created by brakulla on 3/10/19.
-//
+/**
+ * @file timer.h
+ *
+ * Description
+ */
 
 #ifndef BRUTILS_TIMER_H
 #define BRUTILS_TIMER_H

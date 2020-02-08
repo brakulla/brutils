@@ -1,6 +1,8 @@
-//
-// Created by congay on 15/10/2019.
-//
+/**
+ * @file combined_timer.cpp
+ *
+ * Description
+ */
 
 #include "brutils/timers/combined_timer.h"
 

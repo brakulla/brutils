@@ -1,6 +1,8 @@
-//
-// Created by congay on 15/10/2019.
-//
+/**
+ * @file combined_timer.h
+ *
+ * Description
+ */
 
 #ifndef BRUTILS_INCLUDE_BRUTILS_TIMERS_COMBINED_TIMER_H_
 #define BRUTILS_INCLUDE_BRUTILS_TIMERS_COMBINED_TIMER_H_

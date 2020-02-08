@@ -1,6 +1,8 @@
-//
-// Created by Burak Ongay on 10/11/2019.
-//
+/**
+ * @file HttpRequest.h
+ *
+ * Description
+ */
 
 #ifndef BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPREQUEST_H_
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPREQUEST_H_

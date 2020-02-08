@@ -1,6 +1,8 @@
-//
-// Created by congay on 12/11/2019.
-//
+/**
+ * @file time_utils.h
+ *
+ * Description
+ */
 
 #ifndef BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_
 #define BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_

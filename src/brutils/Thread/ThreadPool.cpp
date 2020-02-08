@@ -1,6 +1,8 @@
-//
-// Created by Burak Ongay on 15/12/2019.
-//
+/**
+ * @file ThreadPool.cpp
+ *
+ * Description
+ */
 
 #include "brutils/Thread/ThreadPool.h"
 

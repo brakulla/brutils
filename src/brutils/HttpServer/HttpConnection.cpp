@@ -1,6 +1,8 @@
-//
-// Created by Burak Ongay on 10/11/2019.
-//
+/**
+ * @file HttpConnection.cpp
+ *
+ * Description
+ */
 
 #include "brutils/HttpServer/HttpConnection.h"
 #include "brutils/time_utils.h"
