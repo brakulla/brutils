@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(GNUInstallDirs)
-
 if (CMAKE_BUILD_TYPE MATCHES Test)
     include_directories(include/brutils)
     add_executable(brutilsTest main.cpp src/brutils/json_parser.cpp src/brutils/json_generator.cpp)
@@ -17,7 +15,6 @@ if (CMAKE_BUILD_TYPE MATCHES Test)
             pthread
             )
 else ()
-    include_directories(include)
     add_library(brutils STATIC
             main.cpp
             include/brutils/Thread/ThreadPool.h
@@ -48,13 +45,9 @@ else ()
             include/brutils/json_generator.h
             src/brutils/json_parser.cpp
             src/brutils/json_generator.cpp)
-    add_executable(brutilsTest main.cpp src/brutils/HttpServer/RequestParser.cpp include/brutils/HttpServer/RequestParser.h)
+    target_include_directories(brutils PUBLIC include)
     set_target_properties(brutils PROPERTIES
             LINKER_LANGUAGE CXX
             VERSION ${PROJECT_VERSION}
-            )
-    install(TARGETS brutils
-            LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib
-            ARCHIVE DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib
             )
 endif()
