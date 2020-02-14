@@ -21,10 +21,10 @@ variant json_parser::parse(std::string_view input)
 
     variant content;
     if ('{' == input.at(0)) {
-        content = parseObject(input);
+        content = variant(parseObject(input));
     }
     else if ('[' == input.at(0)) {
-        content = parseArray(input);
+        content = variant(parseArray(input));
     }
     else {
         return variant();
@@ -125,10 +125,10 @@ variant json_parser::parseValue(std::string_view &input)
         val = parseNumber(input);
     }
     else if ('{' == input.at(0)) { // object
-        val = parseObject(input);
+        val = variant(parseObject(input));
     }
     else if ('[' == input.at(0)) { // array
-        val = parseArray(input);
+        val = variant(parseArray(input));
     }
     else {
         val = parseLiteral(input);
@@ -197,7 +197,7 @@ variant json_parser::parseNumber(std::string_view &input)
 
     if ('.' != input.at(0) && 'e' != input.at(0) && 'E' != input.at(0)) {
         removeWhitespace(input);
-        return number;
+        return variant(number);
     }
 
     if ('.' == input.at(0)) {

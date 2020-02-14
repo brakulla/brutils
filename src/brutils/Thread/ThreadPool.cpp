@@ -85,7 +85,7 @@ void ThreadPool::executionFinished_slotFunc(std::thread::id finishedThreadId)
   if (finishedThread->isBusy()) {
     _error = ThreadPoolError {
         ThreadPoolErrorCode::BusyThreadResource,
-        "Thread that finished execution is busy. Check Thread resource for bugs. Thread Id: " + str_threadIdToStr(finishedThreadId);
+        "Thread that finished execution is busy. Check Thread resource for bugs. Thread Id: " + str_threadIdToStr(finishedThreadId)
     };
     errorOccured.emit(_error);
     return;

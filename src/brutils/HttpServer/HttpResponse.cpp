@@ -40,7 +40,7 @@ std::string HttpResponse::getHeader(const std::string &key)
 }
 std::string HttpResponse::getHeader(std::string &&key)
 {
-  getHeader(key);
+  return getHeader(key);
 }
 void HttpResponse::removeHeader(const std::string &key)
 {

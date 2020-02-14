@@ -14,7 +14,7 @@
 
 namespace brutils {
 
-class combined_timer : br_object
+class combined_timer : public br_object
 {
  public:
   explicit combined_timer(br_object *parent = nullptr);

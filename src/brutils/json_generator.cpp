@@ -20,7 +20,7 @@ std::string json_generator::genObject(const variant_map &object, bool compact, i
     std::string output = "{";
     for (auto &item: object) {
         output.append(getWhiteSpace(compact, depth + 1));
-        output.append(genString(item.first));
+        output.append(genString(variant(item.first)));
         output.append(": ");
         output.append(genValue(item.second, compact,depth + 1));
         output.append(", ");
