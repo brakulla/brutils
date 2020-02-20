@@ -61,16 +61,27 @@ void brutils::combined_timer::stop()
 }
 void brutils::combined_timer::run()
 {
-  int16_t closestTimerId = getClosestTimerId();
-  TimerData_s closestTimer = _timeKeeperMap.at(closestTimerId);
   while (!_stopped) {
+    int16_t closestTimerId = getClosestTimerId();
+    if (-1 == closestTimerId) {
+      _stopped = true;
+      return;
+    }
+    TimerData_s closestTimer = _timeKeeperMap.at(closestTimerId);
+
     std::unique_lock lock(_mutex);
     _condVariable.wait_until(lock, closestTimer.expirationDate, [&] {
-      return (closestTimer.expirationDate < std::chrono::steady_clock::now() || !_stopped);
+      return (closestTimer.expirationDate <  std::chrono::steady_clock::now() || _stopped);
     });
+
     if (!_stopped) {
       timeout.emit(closestTimer.id);
-      _timeKeeperMap.erase(closestTimer.id);
+      if (!closestTimer.periodic) {
+        _timeKeeperMap.erase(closestTimer.id);
+      } else {
+        _timeKeeperMap[closestTimerId].expirationDate =
+            std::chrono::steady_clock::now() + std::chrono::milliseconds(closestTimer.duration);
+      }
     }
   }
 }
@@ -87,6 +98,7 @@ int16_t brutils::combined_timer::getClosestTimerId()
   for (++it; it != _timeKeeperMap.cend(); ++it) {
     if (it->second.expirationDate < closestExpDate) {
       closestId = it->first;
+      closestExpDate = it->second.expirationDate;
     }
   }
   return closestId;
