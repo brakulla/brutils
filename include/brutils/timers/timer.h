@@ -13,43 +13,51 @@
 namespace brutils {
 class timer {
  public:
-  void start(int millisec) {
-    auto now = std::chrono::system_clock::now();
-    _deadline = now + std::chrono::milliseconds(millisec);
+  void start(std::chrono::milliseconds millisec, bool periodic = false) {
+    _periodic = periodic;
+    _deadline = Clock::now() + millisec;
     _thread = std::thread(&timer::run, this);
   }
+  void start(int millisec, bool periodic = false) {
+    this->start(std::chrono::milliseconds(millisec), periodic);
+  }
   void restart(int millisec) {
-    _restarted = true;
-    auto now = std::chrono::system_clock::now();
-    _deadline = now + std::chrono::milliseconds(millisec);
-    _cond.notify_one();
+    this->stop();
+    this->start(millisec);
   }
   void stop() {
-    _stopped = true;
+    _running = false;
     _cond.notify_one();
+    if (_thread.joinable()) {
+      _thread.join();
+    }
   }
   void notify(std::function<void()> const &slot) {
     _func = slot;
   }
  private:
-  std::atomic_bool _restarted = false;
-  std::atomic_bool _stopped = false;
-  std::chrono::time_point<std::chrono::system_clock> _deadline;
+  std::atomic_bool _running = false;
   std::thread _thread;
   std::mutex _mutex;
   std::condition_variable _cond;
   std::function<void()> _func;
+  std::chrono::time_point<std::chrono::system_clock> _deadline;
+  bool _periodic;
+  using Clock = std::chrono::system_clock;
  private:
   void run() {
-    while (_restarted) {
-      _restarted = false;
+    do {
       std::unique_lock lock(_mutex);
-      _cond.wait_until(lock, _deadline, [&] { return _deadline < std::chrono::system_clock::now(); });
-    }
-    if (!_stopped) {
-      _func();
-      _thread.join();
-    }
+      _cond.wait_until(lock, _deadline, [&] {
+        return (_deadline < Clock::now() || !_running);
+      });
+      if (_running) {
+        if (!_periodic) {
+          _running = false;
+        }
+        _func();
+      }
+    } while(_periodic);
   }
 };
 }
