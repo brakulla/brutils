@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <cstring>
+#include <algorithm>
 
 using namespace brutils;
 
@@ -124,7 +125,7 @@ bool TcpSocket::setReadBufferSize(const uint64_t readBufferSize)
     return false;
   }
 
-  _readBufferSize = std::min(_dataBuffer.max_size(), readBufferSize);
+  _readBufferSize = std::min(uint64_t(_dataBuffer.max_size()), readBufferSize);
   _dataBuffer.reserve(_readBufferSize);
 
   return true;

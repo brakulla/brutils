@@ -6,6 +6,7 @@
 #define BRUTILS_INCLUDE_BRUTILS_HTTPSERVER_HTTPRESPONSE_H_
 
 #include <filesystem>
+#include <unordered_map>
 
 #include "brutils/br_object.h"
 #include "brutils/variant.h"
