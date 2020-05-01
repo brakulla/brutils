@@ -44,7 +44,7 @@ bool brutils::combined_timer::stopTimer(int16_t timerId)
   stop();
   _timeKeeperMap.erase(timerId);
   start();
-  return false;
+  return true;
 }
 void brutils::combined_timer::start()
 {
