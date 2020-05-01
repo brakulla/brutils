@@ -83,7 +83,7 @@ class br_threaded_object : public br_object
    * @brief Constructor of br_threaded_object. In this constructor, the object is run on a newly created thread.
    */
   br_threaded_object()
-      : _running(true), br_object(this)
+      : br_object(this), _running(true)
   {
     _thread = std::thread(&br_threaded_object::run, this);
   };
