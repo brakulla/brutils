@@ -7,7 +7,7 @@
 
 #include "brutils/br_object.h"
 
-#include <map>
+#include <unordered_map>
 #include <chrono>
 #include <mutex>
 #include <condition_variable>
@@ -44,7 +44,7 @@ class combined_timer : public br_object
 
  private:
   int16_t _lastTimerId;
-  std::map<int16_t, TimerData_s> _timeKeeperMap;
+  std::unordered_map<int16_t, TimerData_s> _timeKeeperMap;
 
   std::atomic_bool _stopped;
   std::mutex _mutex;
