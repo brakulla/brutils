@@ -3,6 +3,7 @@
 //
 
 #include "brutils/timers/combined_timer.h"
+#include <spdlog/spdlog.h>
 
 brutils::combined_timer::combined_timer(brutils::br_object *parent) :
     br_object(parent),
@@ -10,11 +11,11 @@ brutils::combined_timer::combined_timer(brutils::br_object *parent) :
     _stopped(true),
     _lastTimerId(0)
 {
-  printf("Combined timer constructor\n");
+  spdlog::info("Combined timer constructor");
 }
 brutils::combined_timer::~combined_timer()
 {
-  printf("Combined timer destructor\n");
+  spdlog::info("Combined timer destructor");
   stop();
 }
 int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
