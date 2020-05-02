@@ -10,10 +10,11 @@ brutils::combined_timer::combined_timer(brutils::br_object *parent) :
     _stopped(true),
     _lastTimerId(0)
 {
-
+  printf("Combined timer constructor\n");
 }
 brutils::combined_timer::~combined_timer()
 {
+  printf("Combined timer destructor\n");
   stop();
 }
 int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
