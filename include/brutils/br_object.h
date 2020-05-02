@@ -183,7 +183,9 @@ class slot
   explicit slot(br_object* parent)
       : _init(false), _parent(parent)
   {}
-  ~slot() = default;
+  ~slot() {
+    removeThisFromConnectedSignals();
+  };
 
   /**
    * @brief If this overloaded constructor is used, then this instance is ready to make connections.
@@ -244,6 +246,7 @@ class slot
   bool _init;
   std::function<void(Args...)> _function;
   br_object* _parent;
+  std::vector<signal<Args...>*> _connectedSignals;
 
  private:
   /**
@@ -263,6 +266,20 @@ class slot
   {
     return nullptr != _parent;
   }
+
+  void signalConnected(signal<Args...>* signal)
+  {
+    _connectedSignals.push_back(signal);
+  }
+  void signalDisconnected(signal<Args...>* signal)
+  {
+    for (auto it = _connectedSignals.begin(); it != _connectedSignals.end();) {
+      if ((*it) == signal)
+        it = _connectedSignals.erase(it);
+      else ++it;
+    }
+  }
+  void removeThisFromConnectedSignals();
 };
 
 /**
@@ -281,7 +298,9 @@ class signal
   explicit signal(br_object* parent)
       : _parent(parent)
   {};
-  ~signal() = default;
+  ~signal() {
+    disconnect();
+  };
 
  public:
   /**
@@ -321,6 +340,8 @@ class signal
     if (connectionType == ConnectionType::Direct)
       _directConnections.push_back(&slot);
     else _queuedConnections.push_back(&slot);
+
+    slot.signalConnected(this);
   }
 
   /**
@@ -328,25 +349,33 @@ class signal
    */
   void disconnect()
   {
-    _directConnections.clear();
-    _queuedConnections.clear();
+    for (auto it = _directConnections.begin(); it != _directConnections.end();) {
+      (*it)->signalDisconnected(this);
+      it = _directConnections.erase(it);
+    }
+    for (auto it = _queuedConnections.begin(); it != _queuedConnections.end();) {
+      (*it)->signalDisconnected(this);
+      it = _queuedConnections.erase(it);
+    }
   }
 
   /**
    * @brief Destroys the connection previously created by `connect` function.
    * @param slot Slot the connection will be disconnected with.
    */
-  void disconnect(slot<Args...>& slot)
+  void disconnect(slot<Args...>* slot)
   {
-    for (auto it = _directConnections.begin(); it != _directConnections.end(); ++it) {
-      if (*it == slot)
+    for (auto it = _directConnections.begin(); it != _directConnections.end();) {
+      if (*it == slot) {
+        (*it)->signalDisconnected(this);
         it = _directConnections.erase(it);
-      else ++it;
+      } else ++it;
     }
-    for (auto it = _queuedConnections.begin(); it != _queuedConnections.end(); ++it) {
-      if (*it == slot)
+    for (auto it = _queuedConnections.begin(); it != _queuedConnections.end();) {
+      if (*it == slot) {
+        (*it)->signalDisconnected(this);
         it = _queuedConnections.erase(it);
-      else ++it;
+      } else ++it;
     }
   }
 
@@ -394,6 +423,13 @@ class signal
     }
   }
 };
+template<typename... Args>
+void slot<Args...>::removeThisFromConnectedSignals()
+{
+  for (signal<Args...>* signal: _connectedSignals) {
+    signal->disconnect(this);
+  }
+}
 
 }
 
