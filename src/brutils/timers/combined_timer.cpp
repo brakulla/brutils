@@ -42,6 +42,7 @@ int16_t brutils::combined_timer::addTimer(std::chrono::milliseconds duration, bo
 bool brutils::combined_timer::stopTimer(int16_t timerId)
 {
   spdlog::trace("combined_timer::stopTimer - ");
+  std::scoped_lock lock(_dataMutex);
   if (_timeKeeperMap.end() == _timeKeeperMap.find(timerId)) {
     spdlog::trace("combined_timer::stopTimer - Could not find the given timer id {}", timerId);
     return false;
@@ -82,6 +83,7 @@ void brutils::combined_timer::run()
     });
 
     if (!_stopped) {
+      std::scoped_lock lock(_dataMutex);
       spdlog::trace("combined_timer::run - Timeout for timer id {}", closestTimer.id);
       timeout.emit(closestTimer.id);
       if (!closestTimer.periodic) {
