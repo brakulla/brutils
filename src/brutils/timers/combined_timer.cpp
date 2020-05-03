@@ -15,8 +15,6 @@ brutils::combined_timer::combined_timer(brutils::br_object *parent) :
 }
 brutils::combined_timer::~combined_timer()
 {
-  throw std::runtime_error("Being destructed");
-  spdlog::info("Combined timer destructor");
   stop();
 }
 int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)

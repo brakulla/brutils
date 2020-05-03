@@ -13,6 +13,7 @@
 #include <atomic>
 #include <thread>
 #include <queue>
+#include <spdlog/spdlog.h>
 
 namespace brutils
 {
@@ -269,14 +270,15 @@ class slot
 
   void signalConnected(signal<Args...>* signal)
   {
+    spdlog::trace("slot::signalConnected - Connecting signal({}) to slot({})", (void*)(signal), (void*)(this));
     _connectedSignals.push_back(signal);
   }
   void signalDisconnected(signal<Args...>* signal)
   {
-    for (auto it = _connectedSignals.begin(); it != _connectedSignals.end();) {
-      if ((*it) == signal)
-        it = _connectedSignals.erase(it);
-      else ++it;
+    spdlog::trace("slot::signalDisconnected - Disconnecting signal({}) to slot({})", (void*)(signal), (void*)(this));
+    auto el = std::find(_connectedSignals.begin(), _connectedSignals.end(), signal);
+    if (_connectedSignals.end() != el) {
+      _connectedSignals.erase(el);
     }
   }
   void removeThisFromConnectedSignals();
@@ -337,9 +339,13 @@ class signal
         connectionType = ConnectionType::Queued;
     }
 
-    if (connectionType == ConnectionType::Direct)
+    if (connectionType == ConnectionType::Direct) {
       _directConnections.push_back(&slot);
-    else _queuedConnections.push_back(&slot);
+      spdlog::trace("signal::connect - Connecting signal({}) to slot({}) with direct connection", (void*)(this), (void*)(&slot));
+    } else {
+      _queuedConnections.push_back(&slot);
+      spdlog::trace("signal::connect - Connecting signal({}) to slot({}) with queued connection", (void*)(this), (void*)(&slot));
+    }
 
     slot.signalConnected(this);
   }
@@ -350,10 +356,12 @@ class signal
   void disconnect()
   {
     for (auto it = _directConnections.begin(); it != _directConnections.end();) {
+      spdlog::trace("signal::disconnect - Disconnecting direct connection of signal({}) from slot({})", (void*)(this), (void*)(*it));
       (*it)->signalDisconnected(this);
       it = _directConnections.erase(it);
     }
     for (auto it = _queuedConnections.begin(); it != _queuedConnections.end();) {
+      spdlog::trace("signal::disconnect - Disconnecting queued connection of signal({}) from slot({})", (void*)(this), (void*)(*it));
       (*it)->signalDisconnected(this);
       it = _queuedConnections.erase(it);
     }
@@ -365,17 +373,14 @@ class signal
    */
   void disconnect(slot<Args...>* slot)
   {
-    for (auto it = _directConnections.begin(); it != _directConnections.end();) {
-      if (*it == slot) {
-        (*it)->signalDisconnected(this);
-        it = _directConnections.erase(it);
-      } else ++it;
+    auto itD = std::find(_directConnections.begin(), _directConnections.end(), slot);
+    if (_directConnections.end() != itD) {
+      _directConnections.erase(itD);
     }
-    for (auto it = _queuedConnections.begin(); it != _queuedConnections.end();) {
-      if (*it == slot) {
-        (*it)->signalDisconnected(this);
-        it = _queuedConnections.erase(it);
-      } else ++it;
+
+    auto itQ = std::find(_queuedConnections.begin(), _queuedConnections.end(), slot);
+    if (_queuedConnections.end() != itQ) {
+      _queuedConnections.erase(itQ);
     }
   }
 
@@ -409,7 +414,7 @@ class signal
  private:
   void callDirectConnections(Args... parameters)
   {
-    for (auto slot: _directConnections) {
+    for (slot<Args...>* slot: _directConnections) {
       if (nullptr != slot)
         slot->call(parameters...);
     }
@@ -417,7 +422,7 @@ class signal
 
   void callQueuedConnections(Args... parameters)
   {
-    for (auto slot: _queuedConnections) {
+    for (slot<Args...>* slot: _queuedConnections) {
       if (nullptr != slot)
         slot->addEventToParent(parameters...);
     }
@@ -427,6 +432,7 @@ template<typename... Args>
 void slot<Args...>::removeThisFromConnectedSignals()
 {
   for (signal<Args...>* signal: _connectedSignals) {
+    spdlog::trace("slot::removeThisFromConnectedSignals - Removing signal({}) connection to slot({})", (void*)(signal), (void*)(this));
     signal->disconnect(this);
   }
 }
