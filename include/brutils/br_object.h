@@ -375,11 +375,13 @@ class signal
   {
     auto itD = std::find(_directConnections.begin(), _directConnections.end(), slot);
     if (_directConnections.end() != itD) {
+      (*itD)->signalDisconnected(this);
       _directConnections.erase(itD);
     }
 
     auto itQ = std::find(_queuedConnections.begin(), _queuedConnections.end(), slot);
     if (_queuedConnections.end() != itQ) {
+      (*itQ)->signalDisconnected(this);
       _queuedConnections.erase(itQ);
     }
   }
