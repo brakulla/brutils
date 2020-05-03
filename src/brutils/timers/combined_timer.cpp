@@ -82,6 +82,7 @@ void brutils::combined_timer::run()
     });
 
     if (!_stopped) {
+      spdlog::trace("combined_timer::run - Timeout for timer id {}", closestTimer.id);
       timeout.emit(closestTimer.id);
       if (!closestTimer.periodic) {
         _timeKeeperMap.erase(closestTimer.id);
