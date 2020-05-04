@@ -3,7 +3,6 @@
 //
 
 #include "brutils/timers/combined_timer.h"
-#include <spdlog/spdlog.h>
 
 brutils::combined_timer::combined_timer(brutils::br_object *parent) :
     br_object(parent),
@@ -11,7 +10,6 @@ brutils::combined_timer::combined_timer(brutils::br_object *parent) :
     _stopped(true),
     _lastTimerId(0)
 {
-  spdlog::info("Combined timer constructor");
 }
 brutils::combined_timer::~combined_timer()
 {
@@ -19,7 +17,6 @@ brutils::combined_timer::~combined_timer()
 }
 int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
 {
-  spdlog::trace("combined_timer::addTimer - ");
   stop();
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
   TimerData_s timerStruct{false,
@@ -30,7 +27,6 @@ int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
   ++_lastTimerId;
 
   _timeKeeperMap[timerStruct.id] = timerStruct;
-  spdlog::trace("combined_timer::addTimer - With timer id {}", timerStruct.id);
 
   start();
   return timerStruct.id;
@@ -41,17 +37,13 @@ int16_t brutils::combined_timer::addTimer(std::chrono::milliseconds duration, bo
 }
 bool brutils::combined_timer::stopTimer(int16_t timerId)
 {
-  spdlog::trace("combined_timer::stopTimer - ");
   std::scoped_lock lock(_dataMutex);
-  spdlog::trace("combined_timer::stopTimer -- ");
   if (_timeKeeperMap.end() == _timeKeeperMap.find(timerId)) {
-    spdlog::trace("combined_timer::stopTimer - Could not find the given timer id {}", timerId);
     return false;
   }
   _dataMutex.unlock();
   stop();
   _dataMutex.lock();
-  spdlog::trace("combined_timer::stopTimer - Removing timer id {}", timerId);
   _timeKeeperMap.erase(timerId);
   start();
   return true;
@@ -74,7 +66,6 @@ void brutils::combined_timer::run()
   while (!_stopped) {
     int16_t closestTimerId = getClosestTimerId();
     if (-1 == closestTimerId) {
-      spdlog::trace("combined_timer::run - No timer, stopping thread");
       _stopped = true;
       return;
     }
@@ -87,7 +78,6 @@ void brutils::combined_timer::run()
 
     std::scoped_lock dataLock(_dataMutex);
     if (!_stopped) {
-      spdlog::trace("combined_timer::run - Timeout for timer id {}", closestTimer.id);
       timeout.emit(closestTimer.id);
       if (!closestTimer.periodic) {
         _timeKeeperMap.erase(closestTimer.id);
