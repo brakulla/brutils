@@ -48,7 +48,9 @@ bool brutils::combined_timer::stopTimer(int16_t timerId)
     spdlog::trace("combined_timer::stopTimer - Could not find the given timer id {}", timerId);
     return false;
   }
+  _dataMutex.unlock();
   stop();
+  _dataMutex.lock();
   spdlog::trace("combined_timer::stopTimer - Removing timer id {}", timerId);
   _timeKeeperMap.erase(timerId);
   start();
