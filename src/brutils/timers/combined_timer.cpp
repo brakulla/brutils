@@ -85,8 +85,8 @@ void brutils::combined_timer::run()
       return (closestTimer.expirationDate <  std::chrono::steady_clock::now() || _stopped);
     });
 
+    std::scoped_lock dataLock(_dataMutex);
     if (!_stopped) {
-      std::scoped_lock lock(_dataMutex);
       spdlog::trace("combined_timer::run - Timeout for timer id {}", closestTimer.id);
       timeout.emit(closestTimer.id);
       if (!closestTimer.periodic) {
