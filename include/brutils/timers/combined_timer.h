@@ -20,9 +20,9 @@ class combined_timer : public br_object
   explicit combined_timer(br_object *parent = nullptr);
   ~combined_timer() override;
 
-  int16_t addTimer(uint64_t duration_ms, bool periodic = false);
-  int16_t addTimer(std::chrono::milliseconds duration, bool periodic = false);
-  bool stopTimer(int16_t timerId);
+  virtual int16_t addTimer(uint64_t duration_ms, bool periodic = false);
+  virtual int16_t addTimer(std::chrono::milliseconds duration, bool periodic = false);
+  virtual bool stopTimer(int16_t timerId);
 
  public: // signals
   signal<int16_t> timeout; // id
