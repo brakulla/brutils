@@ -10,7 +10,6 @@ brutils::combined_timer::combined_timer(brutils::br_object *parent) :
     _stopped(true),
     _lastTimerId(0)
 {
-
 }
 brutils::combined_timer::~combined_timer()
 {
@@ -38,10 +37,13 @@ int16_t brutils::combined_timer::addTimer(std::chrono::milliseconds duration, bo
 }
 bool brutils::combined_timer::stopTimer(int16_t timerId)
 {
+  std::scoped_lock lock(_dataMutex);
   if (_timeKeeperMap.end() == _timeKeeperMap.find(timerId)) {
     return false;
   }
+  _dataMutex.unlock();
   stop();
+  _dataMutex.lock();
   _timeKeeperMap.erase(timerId);
   start();
   return true;
@@ -74,6 +76,7 @@ void brutils::combined_timer::run()
       return (closestTimer.expirationDate <  std::chrono::steady_clock::now() || _stopped);
     });
 
+    std::scoped_lock dataLock(_dataMutex);
     if (!_stopped) {
       timeout.emit(closestTimer.id);
       if (!closestTimer.periodic) {

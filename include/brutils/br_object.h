@@ -273,10 +273,9 @@ class slot
   }
   void signalDisconnected(signal<Args...>* signal)
   {
-    for (auto it = _connectedSignals.begin(); it != _connectedSignals.end();) {
-      if ((*it) == signal)
-        it = _connectedSignals.erase(it);
-      else ++it;
+    auto el = std::find(_connectedSignals.begin(), _connectedSignals.end(), signal);
+    if (_connectedSignals.end() != el) {
+      _connectedSignals.erase(el);
     }
   }
   void removeThisFromConnectedSignals();
@@ -337,9 +336,11 @@ class signal
         connectionType = ConnectionType::Queued;
     }
 
-    if (connectionType == ConnectionType::Direct)
+    if (connectionType == ConnectionType::Direct) {
       _directConnections.push_back(&slot);
-    else _queuedConnections.push_back(&slot);
+    } else {
+      _queuedConnections.push_back(&slot);
+    }
 
     slot.signalConnected(this);
   }
@@ -365,17 +366,16 @@ class signal
    */
   void disconnect(slot<Args...>* slot)
   {
-    for (auto it = _directConnections.begin(); it != _directConnections.end();) {
-      if (*it == slot) {
-        (*it)->signalDisconnected(this);
-        it = _directConnections.erase(it);
-      } else ++it;
+    auto itD = std::find(_directConnections.begin(), _directConnections.end(), slot);
+    if (_directConnections.end() != itD) {
+      (*itD)->signalDisconnected(this);
+      _directConnections.erase(itD);
     }
-    for (auto it = _queuedConnections.begin(); it != _queuedConnections.end();) {
-      if (*it == slot) {
-        (*it)->signalDisconnected(this);
-        it = _queuedConnections.erase(it);
-      } else ++it;
+
+    auto itQ = std::find(_queuedConnections.begin(), _queuedConnections.end(), slot);
+    if (_queuedConnections.end() != itQ) {
+      (*itQ)->signalDisconnected(this);
+      _queuedConnections.erase(itQ);
     }
   }
 
@@ -409,7 +409,7 @@ class signal
  private:
   void callDirectConnections(Args... parameters)
   {
-    for (auto slot: _directConnections) {
+    for (slot<Args...>* slot: _directConnections) {
       if (nullptr != slot)
         slot->call(parameters...);
     }
@@ -417,7 +417,7 @@ class signal
 
   void callQueuedConnections(Args... parameters)
   {
-    for (auto slot: _queuedConnections) {
+    for (slot<Args...>* slot: _queuedConnections) {
       if (nullptr != slot)
         slot->addEventToParent(parameters...);
     }

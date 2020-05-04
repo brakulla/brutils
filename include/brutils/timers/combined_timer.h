@@ -50,6 +50,7 @@ class combined_timer : public br_object
   std::mutex _mutex;
   std::condition_variable _condVariable;
   std::thread _timerThread;
+  std::mutex _dataMutex;
 
 };
 
