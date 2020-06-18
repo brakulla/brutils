@@ -206,7 +206,7 @@ class slot
    */
   std::thread::id getThreadId()
   {
-    if (nullptr != _parent)
+    if (nullptr != _parent && nullptr != _parent->getRootObject())
       return _parent->getRootObject()->getThreadId();
     else return std::this_thread::get_id();
   }
