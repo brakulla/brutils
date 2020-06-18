@@ -255,7 +255,7 @@ class slot
    */
   void addEventToParent(Args... args) const
   {
-    if (nullptr == _parent)
+    if (nullptr == _parent || nullptr == _parent->getRootObject())
       return;
     _parent->getRootObject()->addEvent([=] {
       _function(args...);
@@ -309,7 +309,7 @@ class signal
    */
   std::thread::id getThreadId()
   {
-    if (nullptr != _parent)
+    if (nullptr != _parent || nullptr != _parent->getRootObject())
       return _parent->getRootObject()->getThreadId();
     else return std::this_thread::get_id();
   }
@@ -323,11 +323,7 @@ class signal
   void connect(slot<Args...>& slot, ConnectionType type = ConnectionType::Auto)
   {
     ConnectionType connectionType = type;
-    if (nullptr == _parent) {
-      connectionType = ConnectionType::Direct;
-    } else if (nullptr == _parent->getRootObject()) {
-      connectionType = ConnectionType::Direct;
-    } else if (!slot.hasParent()) {
+    if (nullptr == _parent || nullptr == _parent->getRootObject() || !slot.hasParent()) {
       connectionType = ConnectionType::Direct;
     } else if (type == ConnectionType::Auto) {
       if (getThreadId() == slot.getThreadId())
@@ -385,7 +381,7 @@ class signal
    */
   void emit(Args... parameters)
   {
-    if (nullptr == _parent) {
+    if (nullptr == _parent || nullptr == _parent->getRootObject()) {
       callDirectConnections(parameters...);
     } else {
       if (std::this_thread::get_id() == _parent->getThreadId()) {
