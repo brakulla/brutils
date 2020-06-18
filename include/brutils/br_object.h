@@ -289,6 +289,9 @@ class slot
 template<typename ...Args>
 class signal
 {
+  template<typename ...S>
+  friend
+  class slot;
  public:
   signal(const signal&) = delete;
   signal(signal&&) = delete;
@@ -418,12 +421,26 @@ class signal
         slot->addEventToParent(parameters...);
     }
   }
+
+  // this function disconnects without notifying disconnected slot object, to be used by that slot object
+  void removeSlotConnection(slot<Args...>* slot)
+  {
+    auto itD = std::find(_directConnections.begin(), _directConnections.end(), slot);
+    if (_directConnections.end() != itD) {
+      _directConnections.erase(itD);
+    }
+
+    auto itQ = std::find(_queuedConnections.begin(), _queuedConnections.end(), slot);
+    if (_queuedConnections.end() != itQ) {
+      _queuedConnections.erase(itQ);
+    }
+  }
 };
 template<typename... Args>
 void slot<Args...>::removeThisFromConnectedSignals()
 {
   for (signal<Args...>* signal: _connectedSignals) {
-    signal->disconnect(this);
+    signal->removeSlotConnection(this);
   }
 }
 
