@@ -43,7 +43,9 @@ else ()
       src/brutils/TcpServer/TcpServer.cpp
       src/brutils/timers/combined_timer.cpp
       src/brutils/json_parser.cpp
-      src/brutils/json_generator.cpp)
+      src/brutils/json_generator.cpp
+      src/brutils/time_utils.cpp
+      )
   target_include_directories(brutils PUBLIC include)
   set_target_properties(brutils PROPERTIES
       LINKER_LANGUAGE CXX

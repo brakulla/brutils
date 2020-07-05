@@ -11,34 +11,34 @@
 
 namespace brutils
 {
-static std::string getTimeFormatted(std::string &format)
-{
-  std::ostringstream osDate;
-  auto time = std::time(nullptr);
-  osDate << std::put_time(std::gmtime(&time), format.c_str());
-  return osDate.str();
-}
-static std::string getTimeFormatted(std::string &&format)
-{
-  std::ostringstream osDate;
-  auto time = std::time(nullptr);
-  osDate << std::put_time(std::gmtime(&time), format.c_str());
-  return osDate.str();
-}
-static std::string getLocaltimeFormatted(std::string &format)
-{
-  std::ostringstream osDate;
-  auto time = std::time(nullptr);
-  osDate << std::put_time(std::localtime(&time), format.c_str());
-  return osDate.str();
-}
-static std::string getLocaltimeFormatted(std::string &&format)
-{
-  std::ostringstream osDate;
-  auto time = std::time(nullptr);
-  osDate << std::put_time(std::localtime(&time), format.c_str());
-  return osDate.str();
-}
+/*!
+ * @brief
+ *    Returns current time as string in the given format
+ * @param[in] format - lvalue reference to the string object containing format information
+ * @return std::string
+ */
+static std::string getTimeFormatted(std::string &format);
+/*!
+ * @brief
+ *    Returns current time as string in the given format
+ * @param[in] format - rvalue reference to the string object containing format information
+ * @return std::string
+ */
+static std::string getTimeFormatted(std::string &&format);
+/*!
+ * @brief
+ *    Returns current local time as string in the given format
+ * @param[in] format - lvalue reference to the string object containing format information
+ * @return std::string
+ */
+static std::string getLocaltimeFormatted(std::string &format);
+/*!
+ * @brief
+ *    Returns current local time as string in the given format
+ * @param[in] format - rvalue reference to the string object containing format information
+ * @return std::string
+ */
+static std::string getLocaltimeFormatted(std::string &&format);
 }
 
 #endif //BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_
