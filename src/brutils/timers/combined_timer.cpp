@@ -55,10 +55,12 @@ void brutils::combined_timer::start()
 }
 void brutils::combined_timer::stop()
 {
-  _stopped = true;
-  _condVariable.notify_one();
-  if (_timerThread.joinable()) {
-    _timerThread.join();
+  if (!_stopped) {
+    _stopped = true;
+    _condVariable.notify_one();
+    if (_timerThread.joinable()) {
+      _timerThread.join();
+    }
   }
 }
 void brutils::combined_timer::run()
