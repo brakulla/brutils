@@ -17,28 +17,28 @@ namespace brutils
  * @param[in] format - lvalue reference to the string object containing format information
  * @return std::string
  */
-static std::string getTimeFormatted(std::string &format);
+std::string getTimeFormatted(std::string &format);
 /*!
  * @brief
  *    Returns current time as string in the given format
  * @param[in] format - rvalue reference to the string object containing format information
  * @return std::string
  */
-static std::string getTimeFormatted(std::string &&format);
+std::string getTimeFormatted(std::string &&format);
 /*!
  * @brief
  *    Returns current local time as string in the given format
  * @param[in] format - lvalue reference to the string object containing format information
  * @return std::string
  */
-static std::string getLocaltimeFormatted(std::string &format);
+std::string getLocaltimeFormatted(std::string &format);
 /*!
  * @brief
  *    Returns current local time as string in the given format
  * @param[in] format - rvalue reference to the string object containing format information
  * @return std::string
  */
-static std::string getLocaltimeFormatted(std::string &&format);
+std::string getLocaltimeFormatted(std::string &&format);
 }
 
 #endif //BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_
