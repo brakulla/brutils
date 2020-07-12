@@ -65,7 +65,9 @@ class br_object
 
   virtual br_object* getRootObject()
   {
-    return _parent;
+    if (_parent)
+      return _parent->getRootObject();
+    else return nullptr;
   }
 
  private:
