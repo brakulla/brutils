@@ -67,7 +67,7 @@ class br_object
   {
     if (_parent)
       return _parent->getRootObject();
-    else return nullptr;
+    else return this;
   }
 
  private:
