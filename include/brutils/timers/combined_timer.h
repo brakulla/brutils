@@ -35,7 +35,6 @@ class combined_timer : public br_object
 
  private:
   struct TimerData_s {
-    bool running = false;
     bool periodic = false;
     int16_t id = -1;
     uint64_t duration = 0;

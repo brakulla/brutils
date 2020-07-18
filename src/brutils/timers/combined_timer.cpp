@@ -19,8 +19,7 @@ int16_t brutils::combined_timer::addTimer(uint64_t duration_ms, bool periodic)
 {
   stop();
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-  TimerData_s timerStruct{false,
-                          periodic,
+  TimerData_s timerStruct{periodic,
                           _lastTimerId,
                           duration_ms,
                           (now + std::chrono::milliseconds(duration_ms))};
