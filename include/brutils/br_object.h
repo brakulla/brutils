@@ -328,7 +328,7 @@ class signal
   void connect(slot<Args...>& slot, ConnectionType type = ConnectionType::Auto)
   {
     ConnectionType connectionType = type;
-    if (nullptr == _parent || nullptr == _parent->getRootObject() || !slot.hasParent()) {
+    if (nullptr == _parent || !slot.hasParent()) {
       connectionType = ConnectionType::Direct;
     } else if (type == ConnectionType::Auto) {
       if (getThreadId() == slot.getThreadId())
