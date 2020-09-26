@@ -259,7 +259,7 @@ class slot
   {
     if (nullptr == _parent || nullptr == _parent->getRootObject())
       return;
-    _parent->getRootObject()->addEvent([=] {
+    _parent->getRootObject()->addEvent([this, &args...] {
       _function(args...);
     });
   }
@@ -393,7 +393,7 @@ class signal
         callDirectConnections(parameters...);
         callQueuedConnections(parameters...);
       } else {
-        _parent->getRootObject()->addEvent([=] {
+        _parent->getRootObject()->addEvent([this, &parameters...] {
           callDirectConnections(parameters...);
           callQueuedConnections(parameters...);
         });
