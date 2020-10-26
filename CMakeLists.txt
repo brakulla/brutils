@@ -24,6 +24,7 @@ else ()
       include/brutils/HttpServer/RequestParser.h
       include/brutils/TcpSocket/TcpSocket.h
       include/brutils/TcpServer/TcpServer.h
+      include/brutils/timers/TimeKeeper.h
       include/brutils/timers/combined_timer.h
       include/brutils/timers/timer.h
       include/brutils/queue_pc.h
@@ -41,6 +42,7 @@ else ()
       src/brutils/HttpServer/RequestParser.cpp
       src/brutils/TcpSocket/TcpSocket.cpp
       src/brutils/TcpServer/TcpServer.cpp
+      src/brutils/timers/TimeKeeper.cpp
       src/brutils/timers/combined_timer.cpp
       src/brutils/json_parser.cpp
       src/brutils/json_generator.cpp
