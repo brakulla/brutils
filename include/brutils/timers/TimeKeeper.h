@@ -73,6 +73,17 @@ class TimeKeeper : public brutils::br_object
   TimeRecord AddRecord(std::chrono::milliseconds duration);
   /*!
    * @brief
+   *    Creates a new record with unique id, end time_point set as the given time point. Adds it to record book, an
+   *    internal unordered_map. Returns the created record for later reference. A thread-safe method.
+   * @param[in] endTP - The end time_point of the timer event, timeout signal will be emitted at given time point
+   * @throws std::invalid_argument - When the given time point is in the past
+   * @throws std::runtime_error - WHen the size is full
+   * @return TimeRecord
+   *    New time record object
+   */
+  TimeRecord AddRecord(std::chrono::system_clock::time_point endTP);
+  /*!
+   * @brief
    *    Cancels a record in the system. It throws if record not found with the same id. A thread-safe method.
    * @param[in] record - TimeRecord object to check the id against the ones in the system
    * @throws std::invalid_argument - When the record is not found

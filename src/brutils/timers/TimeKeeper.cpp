@@ -30,13 +30,26 @@ TimeRecord TimeKeeper::AddRecord(milliseconds duration)
   if (std::numeric_limits<std::uint16_t>::max() == _recordBook.size())
     throw std::runtime_error("TimeKeeper is full!");
 
+  return AddRecord(system_clock::now() + duration);
+}
+TimeRecord TimeKeeper::AddRecord(std::chrono::system_clock::time_point endTP)
+{
+  std::unique_lock lock(_mutex);
+
+  auto now = system_clock::now();
+
+  if (now > endTP)
+    throw std::invalid_argument("Given time point is in the past!");
+  if (std::numeric_limits<std::uint16_t>::max() == _recordBook.size())
+    throw std::runtime_error("TimeKeeper is full!");
+
   TimeRecord record{
-      .id = _lastRecordId++,
-      .duration = duration,
-      .interval = Interval{
-          .start = system_clock::now(),
-          .end = system_clock::now() + duration
-      }
+    .id = _lastRecordId++,
+    .duration = std::chrono::duration_cast<milliseconds>(endTP - now),
+    .interval = Interval{
+      .start = now,
+      .end = endTP
+    }
   };
 
   // make sure no record exists in record book with the new id
