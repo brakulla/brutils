@@ -10,15 +10,17 @@
 #include <sstream>
 #include <chrono>
 
-namespace brutils
+namespace brutils::time
 {
+
 /*!
  * @brief
  *    Returns current time as string in the given format
  * @param[in] format - lvalue reference to the string object containing format information
  * @return std::string
  */
-std::string getTimeFormatted(const std::string& format);
+std::string getTimeFormatted(std::string const& format);
+
 /*!
  * @brief
  *    Returns current time as string in the given format
@@ -26,6 +28,7 @@ std::string getTimeFormatted(const std::string& format);
  * @return std::string
  */
 std::string getTimeFormatted(std::string&& format);
+
 /*!
  * @brief
  *    Returns given time as string in the given format
@@ -33,7 +36,8 @@ std::string getTimeFormatted(std::string&& format);
  * @param[in] timePoint - time point object to convert
  * @return std::string
  */
-std::string getTimeFormatted(const std::string& format, const std::chrono::system_clock::time_point& timePoint);
+std::string getTimeFormatted(std::string const& format, std::chrono::system_clock::time_point const& timePoint);
+
 /*!
  * @brief
  *    Returns given time as string in the given format
@@ -41,14 +45,16 @@ std::string getTimeFormatted(const std::string& format, const std::chrono::syste
  * @param[in] timePoint - time point object to convert
  * @return std::string
  */
-std::string getTimeFormatted(std::string&& format, const std::chrono::system_clock::time_point& timePoint);
+std::string getTimeFormatted(std::string&& format, std::chrono::system_clock::time_point const& timePoint);
+
 /*!
  * @brief
  *    Returns current local time as string in the given format
  * @param[in] format - lvalue reference to the string object containing format information
  * @return std::string
  */
-std::string getLocaltimeFormatted(const std::string& format);
+std::string getLocaltimeFormatted(std::string const& format);
+
 /*!
  * @brief
  *    Returns current local time as string in the given format
@@ -56,6 +62,7 @@ std::string getLocaltimeFormatted(const std::string& format);
  * @return std::string
  */
 std::string getLocaltimeFormatted(std::string&& format);
+
 /*!
  * @brief
  *    Returns given time in local time zone as string in the given format
@@ -63,7 +70,8 @@ std::string getLocaltimeFormatted(std::string&& format);
  * @param[in] timePoint - time point object to convert
  * @return std::string
  */
-std::string getLocaltimeFormatted(const std::string& format, const std::chrono::system_clock::time_point& timePoint);
+std::string getLocaltimeFormatted(std::string const& format, std::chrono::system_clock::time_point const& timePoint);
+
 /*!
  * @brief
  *    Returns given time in local time zone as string in the given format
@@ -71,7 +79,8 @@ std::string getLocaltimeFormatted(const std::string& format, const std::chrono::
  * @param[in] timePoint - time point object to convert
  * @return std::string
  */
-std::string getLocaltimeFormatted(std::string&& format, const std::chrono::system_clock::time_point& timePoint);
+std::string getLocaltimeFormatted(std::string&& format, std::chrono::system_clock::time_point const& timePoint);
+
 }
 
-#endif //BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_
+#endif // BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_
