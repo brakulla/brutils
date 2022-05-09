@@ -1,7 +1,5 @@
 /**
- * @file json_generator.h
- *
- * Description
+ * JSON generator functions
  */
 
 #ifndef JSON_GENERATOR_H

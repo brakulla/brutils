@@ -1,6 +1,6 @@
-//
-// Created by congay on 12/11/2019.
-//
+/**
+ * Time utility function declarations
+ */
 
 #ifndef BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_
 #define BRUTILS_INCLUDE_BRUTILS_TIME_UTILS_H_

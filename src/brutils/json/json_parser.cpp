@@ -1,7 +1,5 @@
 /**
- * @file json_parser.cpp
- *
- * Description
+ * JSON parser implementations
  */
 
 #include "json_parser.h"

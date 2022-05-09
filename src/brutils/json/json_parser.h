@@ -1,7 +1,5 @@
 /**
- * @file json_parser.h
- *
- * Description
+ * JSON parser functions
  */
 
 #ifndef JSON_PARSER_H

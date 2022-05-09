@@ -1,7 +1,5 @@
 /**
- * @file json_generator.cpp
- *
- * Description
+ * JSON generator implementations
  */
 
 #include "json_generator.h"

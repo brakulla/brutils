@@ -1,6 +1,6 @@
-//
-// Created by Burak Ongay on 05/07/2020.
-//
+/**
+ * Time utility function implementations
+ */
 
 #include "time_utils.h"
 
