@@ -12,7 +12,9 @@
 namespace brutils
 {
   /**
-   * @brief simple_timer class is a timer class that is implementing a simple timer operation.
+   * @brief simple_timer class is a timer class that is implementing a simple timer operation. Use this if only a single
+   * timer is required. Use `multi_timer` instead of this one if more than one timer is to be created regularly or at
+   * the same time.
    *
    * It creates a new thread and waits until either a command is received (stop/restart) or the time elapses, whichever
    * is sooner.

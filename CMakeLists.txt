@@ -25,6 +25,6 @@ target_sources(brutils
         src/brutils/json/json_generator.cpp
         src/brutils/json/json_parser.cpp
         src/brutils/time/time_utils.cpp
-        src/brutils/timer/combined_timer.cpp
+        src/brutils/timer/multi_timer.cpp
         src/brutils/timer/simple_timer.cpp
 )
