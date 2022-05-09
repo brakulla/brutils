@@ -22,7 +22,9 @@ target_include_directories(brutils
 )
 target_sources(brutils
     PRIVATE
-        src/brutils/time/time_utils.cpp
         src/brutils/json/json_generator.cpp
         src/brutils/json/json_parser.cpp
+        src/brutils/time/time_utils.cpp
+        src/brutils/timer/combined_timer.cpp
+        src/brutils/timer/simple_timer.cpp
 )
